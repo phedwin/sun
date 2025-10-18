@@ -46,12 +46,45 @@ model Session {
   @@index([token])
 }
 
+// Store all LeetCode questions
+model Question {
+  id                  String   @id @default(cuid())
+  questionId          String   @unique // LeetCode question ID (e.g., "1")
+  slug                String   @unique // URL-friendly slug (e.g., "two-sum")
+  title               String
+  difficulty          String   // "Easy", "Medium", "Hard"
+  acRate              Float?   // Acceptance rate
+  isPaidOnly          Boolean  @default(false)
+
+  // Content fields
+  description         String?  // HTML content
+  exampleTestcases    String?  // Example test cases
+  hints               String?  // JSON array of hints
+
+  // Metadata
+  topicTags           String   // JSON array of topic tags
+  likes               Int      @default(0)
+  dislikes            Int      @default(0)
+  similarQuestions    String?  // JSON array of similar questions
+
+  // Timestamps
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  progress            Progress[]
+
+  @@index([difficulty])
+  @@index([slug])
+  @@index([isPaidOnly])
+}
+
 // Track user progress on problems
 model Progress {
   id              String   @id @default(cuid())
   userId          String
-  questionId      String   // LeetCode question ID
-  questionSlug    String   // LeetCode question slug
+  questionId      String   // References Question.questionId
+  questionSlug    String   // References Question.slug
   questionTitle   String
   difficulty      String   // "Easy", "Medium", "Hard"
   status          String   // "attempted", "solved"
@@ -63,6 +96,7 @@ model Progress {
   solvedAt        DateTime?
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question        Question? @relation(fields: [questionId], references: [questionId])
 
   @@unique([userId, questionId])
   @@index([userId])

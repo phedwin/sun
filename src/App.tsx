@@ -32,6 +32,7 @@ import Questions from "./pages/Questions";
 import CodePlatform from "./pages/CodePlatform";
 import PythonTracks from "./pages/PythonTracks";
 import Index from "./pages/Index";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
                             <Route path="/code" element={<CodePlatform />} />
                             <Route path="/learn" element={<PythonTracks />} />
                             <Route path="/playground" element={<Index />} />
+                            <Route path="/profile" element={<Profile />} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
                     </BrowserRouter>

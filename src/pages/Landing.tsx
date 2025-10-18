@@ -26,7 +26,7 @@ import { Header } from "@/components/Header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import FooterComponent from "@/components/Footer";
-import { getTopicTags } from "@/lib/leetcodeApi";
+import { fetchTopics, fetchStats, syncQuestions } from "@/lib/api";
 import {
     Code2,
     Database,
@@ -66,15 +66,31 @@ const topicIcons: { [key: string]: any } = {
 const Landing = () => {
     const [topics, setTopics] = useState<Array<{name: string, slug: string, count: number}>>([]);
     const [loading, setLoading] = useState(true);
+    const [syncing, setSyncing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const loadTopics = async () => {
+        const loadData = async () => {
             try {
                 setLoading(true);
-                const topicData = await getTopicTags();
-                setTopics(topicData);
+
+                // Check if database is empty
+                const stats = await fetchStats();
+
+                if (stats.data.isEmpty) {
+                    // Database is empty, sync from LeetCode API
+                    console.log('Database is empty, syncing questions...');
+                    setSyncing(true);
+                    setError('Initializing database with 3000 questions... This will take about 2 minutes.');
+                    await syncQuestions(3000);
+                    setSyncing(false);
+                    setError(null);
+                }
+
+                // Load topics with counts
+                const response = await fetchTopics();
+                setTopics(response.data);
             } catch (err) {
                 setError('Failed to load topics. Please try again later.');
                 console.error('Error loading topics:', err);
@@ -83,7 +99,7 @@ const Landing = () => {
             }
         };
 
-        loadTopics();
+        loadData();
     }, []);
 
     const handleTopicClick = (topic: string) => {
