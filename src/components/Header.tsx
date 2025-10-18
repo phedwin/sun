@@ -1,24 +1,24 @@
 /*
- * CJLF LICENSE (c) 2025
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+KWADA LICENSE (c) 2025
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 import "../../seed/mock_leaderboard";
 
@@ -69,7 +69,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import MOCK_LEADERBOARD from "../../seed/mock_leaderboard";
 import { DAYS_OF_THE_WEEK } from "@/lib/CONSTATS";
 
-// Mock streak data - last 30 days
 interface streaks {
     date: Date;
     worked: boolean;
@@ -166,28 +165,23 @@ export const Header = () => {
                 <div className="flex items-center gap-6">
                     <Link
                         to="/"
-                        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                        className="flex items-center gap-3 hover:scale-105 transition-transform"
                     >
-                        <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                            📚 Bestie 📚
-                        </h1>
+                        <div className="text-4xl animate-[float_3s_ease-in-out_infinite]">
+                            ☀️
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-bold bg-gradient-to-r from-[hsl(var(--sunset-orange))] via-[hsl(var(--sunset-pink))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
+                                SUN
+                            </span>
+                            <span className="text-xs text-muted-foreground -mt-1">
+                                Code Like Africa
+                            </span>
+                        </div>
                     </Link>
 
                     <nav className="hidden md:flex items-center gap-4">
-                        <Link
-                            to="/"
-                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            Problems
-                        </Link>
-                        {isAuthenticated && (
-                            <Link
-                                to="/learn"
-                                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                Learn Python
-                            </Link>
-                        )}
+                        {/* Navigation links removed for cleaner design */}
                     </nav>
                 </div>
 
@@ -208,34 +202,51 @@ export const Header = () => {
                         // Authenticated state - show all features
                         <>
                             <div className="flex items-center gap-4 text-muted-foreground">
-                                <button className="flex items-center gap-2 hover:text-foreground transition-colors">
-                                    <Trophy className="h-4 w-4 text-yellow-500" />
-                                    <span className="text-sm font-medium">
-                                        1,250 XP
+                                <button className="flex items-center gap-2 hover:scale-110 hover:text-foreground transition-all group">
+                                    <div className="flex gap-0.5">
+                                        <span className="text-base animate-[beadShine_2s_ease-in-out_infinite]">
+                                            🔴
+                                        </span>
+                                        <span className="text-base animate-[beadShine_2s_ease-in-out_infinite_0.2s]">
+                                            🟡
+                                        </span>
+                                        <span className="text-base animate-[beadShine_2s_ease-in-out_infinite_0.4s]">
+                                            🔵
+                                        </span>
+                                        <span className="text-base animate-[beadShine_2s_ease-in-out_infinite_0.6s]">
+                                            🟢
+                                        </span>
+                                    </div>
+                                    <span className="text-sm font-bold group-hover:text-[hsl(var(--savanna-gold))]">
+                                        1,250 Beads
                                     </span>
                                 </button>
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <button className="flex items-center gap-2 hover:text-foreground transition-colors">
-                                            <Zap className="h-4 w-4 text-primary" />
-                                            <span className="text-sm font-medium">
+                                        <button className="flex items-center gap-2 hover:scale-110 hover:text-foreground transition-all group">
+                                            <span className="text-xl">🔥</span>
+                                            <span className="text-sm font-bold group-hover:text-[hsl(var(--sunset-orange))]">
                                                 7 Day Streak
                                             </span>
                                         </button>
                                     </DialogTrigger>
-                                    <DialogContent className="max-w-sm">
+                                    <DialogContent className="max-w-md border-4 border-[hsl(var(--earth-brown))]">
                                         <DialogHeader>
-                                            <DialogTitle className="flex items-center gap-2">
-                                                <Zap className="h-5 w-5 text-primary" />
-                                                {user.name} :: streak calendar
+                                            <DialogTitle className="flex items-center gap-3 text-2xl">
+                                                <span className="text-3xl">
+                                                    🔥
+                                                </span>
+                                                <span className="bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
+                                                    Your Journey Path
+                                                </span>
                                             </DialogTitle>
-                                            <DialogDescription>
-                                                coding activity over the last 30
-                                                days
+                                            <DialogDescription className="text-base">
+                                                Track your coding adventures
+                                                across the savanna! 🌍
                                             </DialogDescription>
                                         </DialogHeader>
                                         <div className="space-y-4">
-                                            <div className="grid grid-cols-7 gap-1 text-xs text-muted-foreground">
+                                            <div className="grid grid-cols-7 gap-1 text-xs font-bold text-muted-foreground">
                                                 {DAYS_OF_THE_WEEK.map((day) => (
                                                     <div
                                                         key={day}
@@ -245,34 +256,48 @@ export const Header = () => {
                                                     </div>
                                                 ))}
                                             </div>
-                                            <div className="grid grid-cols-7 gap-1">
+                                            <div className="grid grid-cols-7 gap-2">
                                                 {streakData.map(
                                                     (day, index) => (
                                                         <div
                                                             key={index}
-                                                            className={`aspect-square rounded text-xs flex items-center justify-center ${
+                                                            className={`aspect-square rounded-lg text-sm font-bold flex items-center justify-center transition-all hover:scale-110 ${
                                                                 day.worked
-                                                                    ? "bg-primary text-primary-foreground"
-                                                                    : "bg-muted hover:bg-muted/80"
+                                                                    ? "bg-gradient-to-br from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] text-white shadow-lg"
+                                                                    : "bg-muted hover:bg-muted/80 border-2 border-[hsl(var(--earth-brown))]"
                                                             }`}
                                                         >
-                                                            {day.date.getDate()}
+                                                            {day.worked
+                                                                ? "🛖"
+                                                                : day.date.getDate()}
                                                         </div>
                                                     )
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                <div className="w-3 h-3 bg-muted rounded"></div>
-                                                <span>No activity</span>
-                                                <div className="w-3 h-3 bg-primary rounded ml-4"></div>
-                                                <span>Coded today</span>
+                                            <div className="flex items-center gap-4 text-sm font-semibold">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-6 h-6 bg-muted rounded-lg border-2 border-[hsl(var(--earth-brown))]"></div>
+                                                    <span>Rest day</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-gradient-to-br from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))]">
+                                                        🛖
+                                                    </div>
+                                                    <span>Coded!</span>
+                                                </div>
+                                            </div>
+                                            <div className="mt-4 p-4 bg-gradient-to-r from-[hsl(var(--sunset-orange))]/10 to-[hsl(var(--savanna-gold))]/10 rounded-lg border-2 border-[hsl(var(--earth-brown))]">
+                                                <p className="text-center text-lg font-bold">
+                                                    Keep building huts on your
+                                                    journey! 🛖✨
+                                                </p>
                                             </div>
                                         </div>
                                     </DialogContent>
                                 </Dialog>
-                                <button className="flex items-center gap-2 hover:text-foreground transition-colors">
-                                    <Target className="h-4 w-4 text-green-500" />
-                                    <span className="text-sm font-medium">
+                                <button className="flex items-center gap-2 hover:scale-110 hover:text-foreground transition-all group">
+                                    <span className="text-xl">🎯</span>
+                                    <span className="text-sm font-bold group-hover:text-[hsl(var(--bead-green))]">
                                         Score: {dynamicScore}%
                                     </span>
                                 </button>
@@ -286,31 +311,40 @@ export const Header = () => {
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="text-muted-foreground hover:text-foreground"
+                                            className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all"
                                         >
-                                            <Trophy className="h-4 w-4 mr-2" />
+                                            <span className="text-lg mr-2">
+                                                🏆
+                                            </span>
                                             Leaderboard
                                         </Button>
                                     </DialogTrigger>
-                                    <DialogContent className="max-w-md">
+                                    <DialogContent className="max-w-md border-4 border-[hsl(var(--savanna-gold))]">
                                         <DialogHeader>
-                                            <DialogTitle className="flex items-center gap-2">
-                                                <Trophy className="h-5 w-5 text-yellow-500" />
-                                                Global Leaderboard
+                                            <DialogTitle className="flex items-center gap-3 text-2xl">
+                                                <span className="text-3xl">
+                                                    🏆
+                                                </span>
+                                                <span className="bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
+                                                    Bead Collectors
+                                                </span>
                                             </DialogTitle>
-                                            <DialogDescription>
-                                                Top performers this week
+                                            <DialogDescription className="text-base">
+                                                Top code warriors this week!
+                                                🌍✨
                                             </DialogDescription>
                                         </DialogHeader>
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
-                                                    <TableHead className="w-12">
-                                                        #
+                                                    <TableHead className="w-12 font-bold">
+                                                        Rank
                                                     </TableHead>
-                                                    <TableHead>Name</TableHead>
-                                                    <TableHead className="text-right">
-                                                        XP
+                                                    <TableHead className="font-bold">
+                                                        Name
+                                                    </TableHead>
+                                                    <TableHead className="text-right font-bold">
+                                                        Beads
                                                     </TableHead>
                                                 </TableRow>
                                             </TableHeader>
@@ -324,28 +358,46 @@ export const Header = () => {
                                                             className={
                                                                 leaderUser.name ===
                                                                 "You"
-                                                                    ? "bg-primary/10"
-                                                                    : ""
+                                                                    ? "bg-gradient-to-r from-[hsl(var(--sunset-orange))]/10 to-[hsl(var(--savanna-gold))]/10 border-2 border-[hsl(var(--savanna-gold))]"
+                                                                    : "hover:bg-muted/50"
                                                             }
                                                         >
-                                                            <TableCell className="font-medium">
-                                                                {
-                                                                    leaderUser.rank
-                                                                }
+                                                            <TableCell className="font-bold text-lg">
+                                                                {leaderUser.rank ===
+                                                                1
+                                                                    ? "🥇"
+                                                                    : leaderUser.rank ===
+                                                                        2
+                                                                      ? "🥈"
+                                                                      : leaderUser.rank ===
+                                                                          3
+                                                                        ? "🥉"
+                                                                        : leaderUser.rank}
                                                             </TableCell>
-                                                            <TableCell className="font-medium">
+                                                            <TableCell className="font-semibold">
                                                                 {
                                                                     leaderUser.name
                                                                 }
                                                             </TableCell>
-                                                            <TableCell className="text-right">
-                                                                {leaderUser.xp.toLocaleString()}
+                                                            <TableCell className="text-right font-bold">
+                                                                <span className="flex items-center justify-end gap-1">
+                                                                    {leaderUser.xp.toLocaleString()}
+                                                                    <span className="text-xs">
+                                                                        🔴🟡🔵🟢
+                                                                    </span>
+                                                                </span>
                                                             </TableCell>
                                                         </TableRow>
                                                     )
                                                 )}
                                             </TableBody>
                                         </Table>
+                                        <div className="mt-2 p-3 bg-gradient-to-r from-[hsl(var(--sunset-orange))]/10 to-[hsl(var(--savanna-gold))]/10 rounded-lg border-2 border-[hsl(var(--earth-brown))]">
+                                            <p className="text-center text-sm font-bold">
+                                                Collect more beads to climb the
+                                                ranks! 🚀
+                                            </p>
+                                        </div>
                                     </DialogContent>
                                 </Dialog>
 

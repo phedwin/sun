@@ -1,24 +1,24 @@
 /*
- * CJLF LICENSE (c) 2025
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+KWADA LICENSE (c) 2025
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -31,7 +31,7 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { fetchQuestionBySlug } from "@/lib/api";
+import { fetchProblemDetail } from "@/lib/leetcodeApi";
 import { generateCodeTemplates } from "@/lib/codeTemplates";
 
 const SAMPLE_QUESTION = {
@@ -88,19 +88,16 @@ export const QuestionPanel = () => {
                     setIsLoading(true);
                     setError(null);
 
-                    const response = await fetchQuestionBySlug(questionSlug);
-                    const question = response.data;
+                    const question = await fetchProblemDetail(questionSlug);
 
                     // Parse the HTML question content to extract text
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(
-                        question.question || question.description || "",
+                        question.question || "",
                         "text/html"
                     );
                     const questionText =
-                        doc.body.textContent ||
-                        question.description ||
-                        "No description available";
+                        doc.body.textContent || "No description available";
 
                     // Parse examples from HTML
                     const examples = parseExamples(
@@ -110,8 +107,8 @@ export const QuestionPanel = () => {
 
                     // Convert to QuestionPanel format
                     const convertedQuestion = {
-                        id: parseInt(question.questionId),
-                        title: question.title,
+                        id: parseInt(question.questionFrontendId),
+                        title: question.questionTitle,
                         difficulty: question.difficulty.toLowerCase(),
                         description: questionText,
                         examples: examples,
@@ -123,13 +120,13 @@ export const QuestionPanel = () => {
                                 ? question.hints[0]
                                 : "Think about the optimal approach for this problem.",
                         category: question.topicTags[0]?.name || "General",
-                        acceptanceRate: `${question.acRate.toFixed(1)}%`,
+                        acceptanceRate: "N/A",
                         submissions: `${(question.likes / 1000).toFixed(1)}K`,
                     };
 
                     // Generate code templates for this question
                     const codeTemplates = generateCodeTemplates(
-                        question.title,
+                        question.questionTitle,
                         questionSlug
                     );
                     localStorage.setItem(

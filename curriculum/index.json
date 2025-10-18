@@ -1,0 +1,77 @@
+{
+    "title": "Programming Curriculum",
+    "description": "Complete programming curriculum from beginner to advanced concepts",
+    "languages": [
+        {
+            "id": "python",
+            "name": "Python",
+            "icon": "🐍",
+            "status": "available",
+            "categories": [
+                {
+                    "id": "beginner",
+                    "title": "Beginner",
+                    "description": "Start your Python journey with the fundamentals",
+                    "topics": [
+                        {
+                            "id": "introduction",
+                            "title": "Introduction to Python",
+                            "description": "What is Python and why learn it?",
+                            "file": "python/beginner/01-introduction.html",
+                            "questions": []
+                        },
+                        {
+                            "id": "variables",
+                            "title": "Variables and Data Types",
+                            "description": "Learn about strings, numbers, and booleans",
+                            "file": "python/beginner/02-variables.html",
+                            "questions": ["two-sum", "palindrome-number"]
+                        },
+                        {
+                            "id": "operators",
+                            "title": "Operators",
+                            "description": "Arithmetic, comparison, and logical operators",
+                            "file": "python/beginner/03-operators.html",
+                            "questions": []
+                        }
+                    ]
+                },
+                {
+                    "id": "expert",
+                    "title": "Expert",
+                    "description": "Deep dive into Python internals and advanced topics",
+                    "topics": [
+                        {
+                            "id": "building-elf",
+                            "title": "Building ELF Binaries",
+                            "description": "Creating executable formats from Python",
+                            "file": "python/expert/05-building-elf.html",
+                            "questions": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "javascript",
+            "name": "JavaScript",
+            "icon": "⚡",
+            "status": "coming_soon",
+            "categories": []
+        },
+        {
+            "id": "cpp",
+            "name": "C++",
+            "icon": "⚙️",
+            "status": "coming_soon",
+            "categories": []
+        },
+        {
+            "id": "c",
+            "name": "C",
+            "icon": "🔧",
+            "status": "coming_soon",
+            "categories": []
+        }
+    ]
+}

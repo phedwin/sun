@@ -1,24 +1,24 @@
 /*
- * CJLF LICENSE (c) 2025
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+KWADA LICENSE (c) 2025
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -38,11 +38,12 @@ import {
 import { PAGINATE } from "@/lib/CONSTATS";
 import { getDifficultyColor } from "@/lib/island";
 import FooterComponent from "@/components/Footer";
-import { fetchQuestions, Question } from "@/lib/api";
+import { fetchFilteredProblems, LeetCodeProblem } from "@/lib/leetcodeApi";
 
 const Questions = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [questions, setQuestions] = useState<Question[]>([]);
+    const [questions, setQuestions] = useState<LeetCodeProblem[]>([]);
+    const [allQuestions, setAllQuestions] = useState<LeetCodeProblem[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalQuestions, setTotalQuestions] = useState(0);
@@ -66,17 +67,23 @@ const Questions = () => {
             try {
                 setLoading(true);
                 setError(null);
-                const response = await fetchQuestions({
-                    page: currentPage,
-                    limit: PAGINATE,
-                    difficulty: selectedDifficulty || undefined,
-                    topic: currentTopic || undefined,
-                });
-                setQuestions(response.data);
-                setTotalPages(response.pagination.totalPages);
-                setTotalQuestions(response.pagination.total);
+                const problems = await fetchFilteredProblems(
+                    500,
+                    0,
+                    selectedDifficulty || undefined,
+                    currentTopic || undefined
+                );
+                setAllQuestions(problems);
+                setTotalQuestions(problems.length);
+                setTotalPages(Math.ceil(problems.length / PAGINATE));
+                // Reset to page 1 when filters change
+                setCurrentPage(1);
             } catch (err) {
-                setError("Failed to load questions. Please try again later.");
+                const errorMessage =
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to load questions. Please try again later.";
+                setError(errorMessage);
                 console.error("Error loading questions:", err);
             } finally {
                 setLoading(false);
@@ -84,11 +91,18 @@ const Questions = () => {
         };
 
         loadQuestions();
-    }, [selectedDifficulty, currentTopic, currentPage]);
+    }, [selectedDifficulty, currentTopic]);
+
+    // Paginate questions client-side
+    useEffect(() => {
+        const startIndex = (currentPage - 1) * PAGINATE;
+        const endIndex = startIndex + PAGINATE;
+        setQuestions(allQuestions.slice(startIndex, endIndex));
+    }, [allQuestions, currentPage]);
 
     // Navigate to code platform with question slug in URL
-    const handleQuestionClick = (question: Question) => {
-        navigate(`/code?question=${question.slug}`);
+    const handleQuestionClick = (question: LeetCodeProblem) => {
+        navigate(`/code?question=${question.titleSlug}`);
     };
 
     const handlePageChange = (page: number) => {
@@ -286,16 +300,22 @@ const Questions = () => {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {questions.map((question) => (
+                                    {questions.map((question, index) => (
                                         <TableRow
-                                            key={question.questionId}
+                                            key={question.questionFrontendId}
                                             className="cursor-pointer hover:bg-muted/50 transition-colors"
                                             onClick={() =>
                                                 handleQuestionClick(question)
                                             }
                                         >
                                             <TableCell className="font-mono text-sm text-muted-foreground">
-                                                {question.questionId}
+                                                {currentTopic ||
+                                                selectedDifficulty
+                                                    ? (currentPage - 1) *
+                                                          PAGINATE +
+                                                      index +
+                                                      1
+                                                    : question.questionFrontendId}
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">

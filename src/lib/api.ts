@@ -1,26 +1,25 @@
 /*
- * CJLF LICENSE (c) 2025
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+KWADA LICENSE (c) 2025
 
-// Frontend API service - communicates with our Express backend
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 
 const API_BASE_URL = "http://localhost:3001/api";
 
@@ -78,7 +77,6 @@ export interface StatsResponse {
     };
 }
 
-// Fetch all questions with filtering
 export async function fetchQuestions(options?: {
     page?: number;
     limit?: number;
@@ -105,7 +103,6 @@ export async function fetchQuestions(options?: {
     return response.json();
 }
 
-// Fetch a single question by slug
 export async function fetchQuestionBySlug(
     slug: string
 ): Promise<QuestionDetailResponse> {
@@ -118,7 +115,6 @@ export async function fetchQuestionBySlug(
     return response.json();
 }
 
-// Fetch all topic tags
 export async function fetchTopics(): Promise<TopicsResponse> {
     const response = await fetch(`${API_BASE_URL}/questions/topics`);
 
@@ -129,7 +125,6 @@ export async function fetchTopics(): Promise<TopicsResponse> {
     return response.json();
 }
 
-// Get database stats
 export async function fetchStats(): Promise<StatsResponse> {
     const response = await fetch(`${API_BASE_URL}/questions/stats`);
 
@@ -140,7 +135,6 @@ export async function fetchStats(): Promise<StatsResponse> {
     return response.json();
 }
 
-// Sync questions from LeetCode API to our database (admin function)
 export async function syncQuestions(limit: number = 3000): Promise<{
     success: boolean;
     message: string;

@@ -1,24 +1,24 @@
 /*
- * CJLF LICENSE (c) 2025
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+KWADA LICENSE (c) 2025
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
@@ -27,7 +27,6 @@ const prisma = new PrismaClient();
 
 const API_BASE_URL = "https://alfa-leetcode-api.onrender.com";
 
-// Get database stats
 export async function getStats(req: Request, res: Response) {
     try {
         const totalQuestions = await prisma.question.count();
@@ -60,7 +59,6 @@ export async function getStats(req: Request, res: Response) {
     }
 }
 
-// Helper function to create slug from title
 function createSlug(title: string): string {
     return title
         .toLowerCase()
@@ -68,7 +66,6 @@ function createSlug(title: string): string {
         .replace(/^-+|-+$/g, "");
 }
 
-// Sync questions from LeetCode API to database
 export async function syncQuestions(req: Request, res: Response) {
     try {
         const limit = parseInt(req.query.limit as string) || 3000;
@@ -178,7 +175,6 @@ export async function syncQuestions(req: Request, res: Response) {
     }
 }
 
-// Get all questions with filtering
 export async function getQuestions(req: Request, res: Response) {
     try {
         const page = parseInt(req.query.page as string) || 1;
@@ -255,7 +251,6 @@ export async function getQuestions(req: Request, res: Response) {
     }
 }
 
-// Get a single question by slug
 export async function getQuestionBySlug(req: Request, res: Response) {
     try {
         const { slug } = req.params;
@@ -318,7 +313,6 @@ export async function getQuestionBySlug(req: Request, res: Response) {
     }
 }
 
-// Get all unique topic tags with question counts
 export async function getTopics(req: Request, res: Response) {
     try {
         const questions = await prisma.question.findMany({
