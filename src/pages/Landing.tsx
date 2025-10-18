@@ -162,7 +162,7 @@ const Landing = () => {
                             <div className="absolute bottom-20 right-10 w-40 h-40 rounded-full bg-gradient-to-br from-[hsl(var(--savanna-gold))] to-[hsl(var(--sky-blue))] opacity-20 blur-3xl animate-[float_8s_ease-in-out_infinite_2s]"></div>
                         </div>
                         <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-[hsl(var(--sunset-orange))] via-[hsl(var(--sunset-pink))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent animate-[float_4s_ease-in-out_infinite]">
-                            Code Like Africa
+                            Code. Code. Code :D
                         </h1>
                         <p className="text-2xl text-muted-foreground max-w-3xl mx-auto font-semibold">
                             Learn to code on a journey through vibrant lessons,
