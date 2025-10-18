@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /home/ken-thompson/Documents/bestie/sun -type f ( -name \"*.md\" -o -name \"API*\" ))",
+      "Bash(curl -s \"https://alfa-leetcode-api.onrender.com/problems?limit=50\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s \"https://alfa-leetcode-api.onrender.com/select?titleSlug=two-sum\")",
+      "Bash(npm run dev)",
+      "Bash(curl -s \"https://alfa-leetcode-api.onrender.com/problems?limit=200\")",
+      "Bash(python3 -c \"import sys, json; data = json.load(sys.stdin); tags = set(); [tags.update([tag[''''name''''] for tag in q[''''topicTags'''']]) for q in data[''''problemsetQuestionList'''']]; print(''''\\n''''.join(sorted(tags)))\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
