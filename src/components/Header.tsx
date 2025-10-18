@@ -1,16 +1,16 @@
 /*
  * CJLF LICENSE (c) 2025
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -97,8 +97,8 @@ export const Header = () => {
     // Calculate dynamic score based on solved problems and streak
     const calculateScore = () => {
         const solvedProblems = 15;
-        const currentStreak = streakData.filter(day => day.worked).length;
-        const baseScore = (solvedProblems * 5) + (currentStreak * 2);
+        const currentStreak = streakData.filter((day) => day.worked).length;
+        const baseScore = solvedProblems * 5 + currentStreak * 2;
         return Math.min(Math.round((baseScore / 100) * 100), 100);
     };
 
@@ -152,7 +152,12 @@ export const Header = () => {
 
     const getUserInitials = () => {
         if (!user?.name) return "U";
-        return user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        return user.name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
     };
 
     return (
@@ -225,7 +230,8 @@ export const Header = () => {
                                                 {user.name} :: streak calendar
                                             </DialogTitle>
                                             <DialogDescription>
-                                                coding activity over the last 30 days
+                                                coding activity over the last 30
+                                                days
                                             </DialogDescription>
                                         </DialogHeader>
                                         <div className="space-y-4">
@@ -240,18 +246,20 @@ export const Header = () => {
                                                 ))}
                                             </div>
                                             <div className="grid grid-cols-7 gap-1">
-                                                {streakData.map((day, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={`aspect-square rounded text-xs flex items-center justify-center ${
-                                                            day.worked
-                                                                ? "bg-primary text-primary-foreground"
-                                                                : "bg-muted hover:bg-muted/80"
-                                                        }`}
-                                                    >
-                                                        {day.date.getDate()}
-                                                    </div>
-                                                ))}
+                                                {streakData.map(
+                                                    (day, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className={`aspect-square rounded text-xs flex items-center justify-center ${
+                                                                day.worked
+                                                                    ? "bg-primary text-primary-foreground"
+                                                                    : "bg-muted hover:bg-muted/80"
+                                                            }`}
+                                                        >
+                                                            {day.date.getDate()}
+                                                        </div>
+                                                    )
+                                                )}
                                             </div>
                                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                                 <div className="w-3 h-3 bg-muted rounded"></div>
@@ -307,26 +315,35 @@ export const Header = () => {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {MOCK_LEADERBOARD.map((leaderUser) => (
-                                                    <TableRow
-                                                        key={leaderUser.rank}
-                                                        className={
-                                                            leaderUser.name === "You"
-                                                                ? "bg-primary/10"
-                                                                : ""
-                                                        }
-                                                    >
-                                                        <TableCell className="font-medium">
-                                                            {leaderUser.rank}
-                                                        </TableCell>
-                                                        <TableCell className="font-medium">
-                                                            {leaderUser.name}
-                                                        </TableCell>
-                                                        <TableCell className="text-right">
-                                                            {leaderUser.xp.toLocaleString()}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
+                                                {MOCK_LEADERBOARD.map(
+                                                    (leaderUser) => (
+                                                        <TableRow
+                                                            key={
+                                                                leaderUser.rank
+                                                            }
+                                                            className={
+                                                                leaderUser.name ===
+                                                                "You"
+                                                                    ? "bg-primary/10"
+                                                                    : ""
+                                                            }
+                                                        >
+                                                            <TableCell className="font-medium">
+                                                                {
+                                                                    leaderUser.rank
+                                                                }
+                                                            </TableCell>
+                                                            <TableCell className="font-medium">
+                                                                {
+                                                                    leaderUser.name
+                                                                }
+                                                            </TableCell>
+                                                            <TableCell className="text-right">
+                                                                {leaderUser.xp.toLocaleString()}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )
+                                                )}
                                             </TableBody>
                                         </Table>
                                     </DialogContent>
@@ -350,12 +367,19 @@ export const Header = () => {
                                             <ChevronDown className="h-4 w-4 ml-1" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-48">
-                                        <DropdownMenuItem onClick={handleCopyCode}>
+                                    <DropdownMenuContent
+                                        align="end"
+                                        className="w-48"
+                                    >
+                                        <DropdownMenuItem
+                                            onClick={handleCopyCode}
+                                        >
                                             <Copy className="h-4 w-4 mr-2" />
                                             Copy Server Code
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={handleShareCode}>
+                                        <DropdownMenuItem
+                                            onClick={handleShareCode}
+                                        >
                                             <Share className="h-4 w-4 mr-2" />
                                             Share Server Code
                                         </DropdownMenuItem>
@@ -380,7 +404,8 @@ export const Header = () => {
                                                     Server Active
                                                 </DialogTitle>
                                                 <DialogDescription>
-                                                    Your server code for friends to join
+                                                    Your server code for friends
+                                                    to join
                                                 </DialogDescription>
                                             </DialogHeader>
                                             <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
@@ -409,29 +434,51 @@ export const Header = () => {
                                 {/* User Profile Dropdown */}
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="relative h-8 w-8 rounded-full"
+                                        >
                                             <Avatar className="h-8 w-8">
-                                                <AvatarImage src={user.avatar} alt={user.name} />
-                                                <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                                                <AvatarImage
+                                                    src={user.avatar}
+                                                    alt={user.name}
+                                                />
+                                                <AvatarFallback>
+                                                    {getUserInitials()}
+                                                </AvatarFallback>
                                             </Avatar>
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuContent
+                                        align="end"
+                                        className="w-56"
+                                    >
                                         <div className="flex items-center justify-start gap-2 p-2">
                                             <div className="flex flex-col space-y-1 leading-none">
-                                                <p className="font-medium">{user.name}</p>
-                                                <p className="text-sm text-muted-foreground">{user.email}</p>
+                                                <p className="font-medium">
+                                                    {user.name}
+                                                </p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {user.email}
+                                                </p>
                                             </div>
                                         </div>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem asChild>
-                                            <Link to="/profile" className="cursor-pointer">
+                                            <Link
+                                                to="/profile"
+                                                className="cursor-pointer"
+                                            >
                                                 <UserIcon className="mr-2 h-4 w-4" />
                                                 Profile
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                                        <DropdownMenuItem
+                                            onClick={handleLogout}
+                                            className="text-red-600"
+                                        >
                                             <LogOut className="mr-2 h-4 w-4" />
                                             Log out
                                         </DropdownMenuItem>
@@ -444,7 +491,10 @@ export const Header = () => {
             </div>
 
             {/* Login Modal */}
-            <LoginModal open={loginModalOpen} onOpenChange={setLoginModalOpen} />
+            <LoginModal
+                open={loginModalOpen}
+                onOpenChange={setLoginModalOpen}
+            />
         </header>
     );
 };

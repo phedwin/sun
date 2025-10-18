@@ -1,16 +1,16 @@
 /*
  * CJLF LICENSE (c) 2025
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -64,7 +64,9 @@ const topicIcons: { [key: string]: any } = {
 };
 
 const Landing = () => {
-    const [topics, setTopics] = useState<Array<{name: string, slug: string, count: number}>>([]);
+    const [topics, setTopics] = useState<
+        Array<{ name: string; slug: string; count: number }>
+    >([]);
     const [loading, setLoading] = useState(true);
     const [syncing, setSyncing] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -80,9 +82,11 @@ const Landing = () => {
 
                 if (stats.data.isEmpty) {
                     // Database is empty, sync from LeetCode API
-                    console.log('Database is empty, syncing questions...');
+                    console.log("Database is empty, syncing questions...");
                     setSyncing(true);
-                    setError('Initializing database with 3000 questions... This will take about 2 minutes.');
+                    setError(
+                        "Initializing database with 3000 questions... This will take about 2 minutes."
+                    );
                     await syncQuestions(3000);
                     setSyncing(false);
                     setError(null);
@@ -92,8 +96,8 @@ const Landing = () => {
                 const response = await fetchTopics();
                 setTopics(response.data);
             } catch (err) {
-                setError('Failed to load topics. Please try again later.');
-                console.error('Error loading topics:', err);
+                setError("Failed to load topics. Please try again later.");
+                console.error("Error loading topics:", err);
             } finally {
                 setLoading(false);
             }
@@ -107,7 +111,7 @@ const Landing = () => {
     };
 
     const handleViewAllClick = () => {
-        navigate('/questions');
+        navigate("/questions");
     };
 
     const getTopicIcon = (slug: string) => {
@@ -127,11 +131,13 @@ const Landing = () => {
                             Master Coding Interviews
                         </h1>
                         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                            Practice coding problems by topic. Choose from algorithms, data structures, databases, and more.
+                            Practice coding problems by topic. Choose from
+                            algorithms, data structures, databases, and more.
                         </p>
                         <div className="flex items-center justify-center gap-4 pt-4">
                             <Badge variant="outline" className="text-sm">
-                                {topics.reduce((sum, t) => sum + t.count, 0)} Problems
+                                {topics.reduce((sum, t) => sum + t.count, 0)}{" "}
+                                Problems
                             </Badge>
                             <Badge variant="outline" className="text-sm">
                                 {topics.length} Topics
@@ -141,7 +147,9 @@ const Landing = () => {
 
                     {error && (
                         <div className="rounded-lg border border-red-500 bg-red-50 dark:bg-red-950 p-4">
-                            <p className="text-red-800 dark:text-red-200">{error}</p>
+                            <p className="text-red-800 dark:text-red-200">
+                                {error}
+                            </p>
                         </div>
                     )}
 
@@ -162,7 +170,9 @@ const Landing = () => {
                     ) : (
                         <>
                             <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-semibold">Browse by Topic</h2>
+                                <h2 className="text-2xl font-semibold">
+                                    Browse by Topic
+                                </h2>
                                 <button
                                     onClick={handleViewAllClick}
                                     className="flex items-center gap-2 text-primary hover:underline"
@@ -179,7 +189,9 @@ const Landing = () => {
                                         <Card
                                             key={topic.slug}
                                             className="cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200 border-2 hover:border-primary group"
-                                            onClick={() => handleTopicClick(topic.slug)}
+                                            onClick={() =>
+                                                handleTopicClick(topic.slug)
+                                            }
                                         >
                                             <CardHeader className="pb-3">
                                                 <div className="flex items-center justify-between">
@@ -194,7 +206,11 @@ const Landing = () => {
                                             </CardHeader>
                                             <CardContent>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {topic.count} {topic.count === 1 ? 'problem' : 'problems'} available
+                                                    {topic.count}{" "}
+                                                    {topic.count === 1
+                                                        ? "problem"
+                                                        : "problems"}{" "}
+                                                    available
                                                 </p>
                                             </CardContent>
                                         </Card>
@@ -209,11 +225,14 @@ const Landing = () => {
                         <Card className="text-center">
                             <CardHeader>
                                 <Code2 className="h-12 w-12 mx-auto text-primary" />
-                                <CardTitle className="mt-4">Real LeetCode Problems</CardTitle>
+                                <CardTitle className="mt-4">
+                                    Real LeetCode Problems
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-muted-foreground">
-                                    Practice with actual problems from LeetCode's extensive library
+                                    Practice with actual problems from
+                                    LeetCode's extensive library
                                 </p>
                             </CardContent>
                         </Card>
@@ -221,11 +240,14 @@ const Landing = () => {
                         <Card className="text-center">
                             <CardHeader>
                                 <Zap className="h-12 w-12 mx-auto text-primary" />
-                                <CardTitle className="mt-4">Topic-Based Learning</CardTitle>
+                                <CardTitle className="mt-4">
+                                    Topic-Based Learning
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-muted-foreground">
-                                    Master one concept at a time with focused practice
+                                    Master one concept at a time with focused
+                                    practice
                                 </p>
                             </CardContent>
                         </Card>
@@ -233,11 +255,14 @@ const Landing = () => {
                         <Card className="text-center">
                             <CardHeader>
                                 <GitBranch className="h-12 w-12 mx-auto text-primary" />
-                                <CardTitle className="mt-4">Track Your Progress</CardTitle>
+                                <CardTitle className="mt-4">
+                                    Track Your Progress
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-muted-foreground">
-                                    Filter by difficulty and monitor your improvement
+                                    Filter by difficulty and monitor your
+                                    improvement
                                 </p>
                             </CardContent>
                         </Card>

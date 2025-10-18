@@ -1,16 +1,16 @@
 /*
  * CJLF LICENSE (c) 2025
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,7 +37,9 @@ import { CodeTemplate } from "@/lib/codeTemplates";
 export const CodeEditor = () => {
     const [language, setLanguage] = useState("javascript");
     const [fontFamily, setFontFamily] = useState("Fira Code");
-    const [codeTemplates, setCodeTemplates] = useState<CodeTemplate | null>(null);
+    const [codeTemplates, setCodeTemplates] = useState<CodeTemplate | null>(
+        null
+    );
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
     // monaco language mapping
@@ -54,7 +56,10 @@ export const CodeEditor = () => {
     // Get code template from stored templates or fallback to simple comment
     const getCodeTemplate = (lang: string) => {
         if (codeTemplates) {
-            return codeTemplates[lang as keyof CodeTemplate] || `// Write your code here`;
+            return (
+                codeTemplates[lang as keyof CodeTemplate] ||
+                `// Write your code here`
+            );
         }
 
         // Fallback to simple comments if no templates are loaded
@@ -77,7 +82,10 @@ export const CodeEditor = () => {
                 const templates: CodeTemplate = JSON.parse(storedTemplates);
                 setCodeTemplates(templates);
                 // Update code with the loaded template for current language
-                setCode(templates[language as keyof CodeTemplate] || getCodeTemplate(language));
+                setCode(
+                    templates[language as keyof CodeTemplate] ||
+                        getCodeTemplate(language)
+                );
             } catch (error) {
                 console.error("Error parsing code templates:", error);
             }
@@ -114,7 +122,10 @@ export const CodeEditor = () => {
         setLanguage(newLang);
         // Use the template from codeTemplates if available
         if (codeTemplates) {
-            setCode(codeTemplates[newLang as keyof CodeTemplate] || getCodeTemplate(newLang));
+            setCode(
+                codeTemplates[newLang as keyof CodeTemplate] ||
+                    getCodeTemplate(newLang)
+            );
         } else {
             setCode(getCodeTemplate(newLang));
         }
@@ -123,7 +134,10 @@ export const CodeEditor = () => {
     // Handle reset button
     const handleReset = () => {
         if (codeTemplates) {
-            setCode(codeTemplates[language as keyof CodeTemplate] || getCodeTemplate(language));
+            setCode(
+                codeTemplates[language as keyof CodeTemplate] ||
+                    getCodeTemplate(language)
+            );
         } else {
             setCode(getCodeTemplate(language));
         }
@@ -151,18 +165,21 @@ export const CodeEditor = () => {
                         </SelectContent>
                     </Select>
 
-                    <Select
-                        value={fontFamily}
-                        onValueChange={handleFontChange}
-                    >
+                    <Select value={fontFamily} onValueChange={handleFontChange}>
                         <SelectTrigger className="w-40">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="Fira Code">Fira Code</SelectItem>
-                            <SelectItem value="Cascadia Code">Cascadia Code</SelectItem>
-                            <SelectItem value="Monaspace Argon">Monaspace Argon</SelectItem>
-                            <SelectItem value="Monaspace Neon">Monaspace Neon</SelectItem>
+                            <SelectItem value="Cascadia Code">
+                                Cascadia Code
+                            </SelectItem>
+                            <SelectItem value="Monaspace Argon">
+                                Monaspace Argon
+                            </SelectItem>
+                            <SelectItem value="Monaspace Neon">
+                                Monaspace Neon
+                            </SelectItem>
                             <SelectItem value="Monaco">Monaco</SelectItem>
                             <SelectItem value="Consolas">Consolas</SelectItem>
                         </SelectContent>
