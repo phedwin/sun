@@ -26,7 +26,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
-import Dashboard from "./pages/Dashboard";
+import Landing from "./pages/Landing";
+import Questions from "./pages/Questions";
 import CodePlatform from "./pages/CodePlatform";
 import PythonTracks from "./pages/PythonTracks";
 import Index from "./pages/Index";
@@ -42,7 +43,8 @@ const App = () => (
                 <Sonner />
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/" element={<Landing />} />
+                        <Route path="/questions" element={<Questions />} />
                         <Route path="/code" element={<CodePlatform />} />
                         <Route path="/learn" element={<PythonTracks />} />
                         <Route path="/playground" element={<Index />} />

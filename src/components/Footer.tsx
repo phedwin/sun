@@ -30,7 +30,7 @@ const FooterComponent = () => {
     return (
         <footer className="border-t border-border py-8 mt-16">
             <div className="container text-center text-muted-foreground">
-                <p> {year} &copy; CJLF::Bunyala.</p>
+                <p> {year} &copy; KWADA::BUNYALA.</p>
             </div>
         </footer>
     );
