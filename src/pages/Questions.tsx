@@ -21,11 +21,11 @@
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Filter, X } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -38,26 +38,41 @@ import {
 import { PAGINATE } from "@/lib/CONSTATS";
 import { getDifficultyColor } from "@/lib/island";
 import FooterComponent from "@/components/Footer";
-import { fetchDashboardProblems, LeetCodeProblem } from "@/lib/leetcodeApi";
+import { fetchQuestions, Question } from "@/lib/api";
 
-const Dashboard = () => {
-    const [allQuestions, setAllQuestions] = useState<LeetCodeProblem[]>([]);
-    const [questions, setQuestions] = useState<LeetCodeProblem[]>([]);
+const Questions = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [questions, setQuestions] = useState<Question[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(4); // 200 questions / 50 per page = 4 pages
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalQuestions, setTotalQuestions] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedDifficulty, setSelectedDifficulty] = useState<'Easy' | 'Medium' | 'Hard' | null>(null);
+    const [currentTopic, setCurrentTopic] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    // Fetch all 200 questions on component mount
+    // Get topic from URL params
+    useEffect(() => {
+        const topic = searchParams.get('topic');
+        setCurrentTopic(topic);
+    }, [searchParams]);
+
+    // Fetch questions based on filters
     useEffect(() => {
         const loadQuestions = async () => {
             try {
                 setLoading(true);
                 setError(null);
-                const problems = await fetchDashboardProblems();
-                setAllQuestions(problems);
-                setTotalPages(Math.ceil(problems.length / PAGINATE));
+                const response = await fetchQuestions({
+                    page: currentPage,
+                    limit: PAGINATE,
+                    difficulty: selectedDifficulty || undefined,
+                    topic: currentTopic || undefined
+                });
+                setQuestions(response.data);
+                setTotalPages(response.pagination.totalPages);
+                setTotalQuestions(response.pagination.total);
             } catch (err) {
                 setError('Failed to load questions. Please try again later.');
                 console.error('Error loading questions:', err);
@@ -67,22 +82,11 @@ const Dashboard = () => {
         };
 
         loadQuestions();
-    }, []);
+    }, [selectedDifficulty, currentTopic, currentPage]);
 
-    // Update displayed questions when page changes
-    useEffect(() => {
-        if (allQuestions.length > 0) {
-            const startIndex = (currentPage - 1) * PAGINATE;
-            const endIndex = startIndex + PAGINATE;
-            const pageQuestions = allQuestions.slice(startIndex, endIndex);
-            setQuestions(pageQuestions);
-        }
-    }, [currentPage, allQuestions]);
-
-    // Store the selected question in localStorage to pass to /code page
-    const handleQuestionClick = (question: LeetCodeProblem) => {
-        localStorage.setItem("selectedQuestion", JSON.stringify(question));
-        navigate("/code");
+    // Navigate to code platform with question slug in URL
+    const handleQuestionClick = (question: Question) => {
+        navigate(`/code?question=${question.slug}`);
     };
 
     const handlePageChange = (page: number) => {
@@ -91,28 +95,108 @@ const Dashboard = () => {
         }
     };
 
+    const handleDifficultyFilter = (difficulty: 'Easy' | 'Medium' | 'Hard') => {
+        if (selectedDifficulty === difficulty) {
+            setSelectedDifficulty(null);
+        } else {
+            setSelectedDifficulty(difficulty);
+        }
+    };
+
+    const clearTopicFilter = () => {
+        setSearchParams({});
+        setCurrentTopic(null);
+    };
+
+    const getTopicDisplayName = (slug: string | null) => {
+        if (!slug) return null;
+        return slug.split('-').map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+    };
+
     return (
         <div className="min-h-screen bg-background">
             <Header />
 
             <main className="container py-8">
                 <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold">
-                                Coding Challenges
-                            </h1>
-                            <p className="text-text-secondary mt-2">
-                                Choose from {allQuestions.length} programming
-                                challenges across all difficulty levels
-                            </p>
+                    {/* Header with filters */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="text-3xl font-bold">
+                                    {currentTopic ? getTopicDisplayName(currentTopic) : 'All'} Problems
+                                </h1>
+                                <p className="text-text-secondary mt-2">
+                                    {totalQuestions} {selectedDifficulty ? selectedDifficulty.toLowerCase() : ''} problems
+                                    {currentTopic && ` in ${getTopicDisplayName(currentTopic)}`}
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-text-secondary">
+                                <span>
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-text-secondary">
-                            <span>
-                                Page {currentPage} of {totalPages}
-                            </span>
-                            <span>•</span>
-                            <span>{allQuestions.length} total questions</span>
+
+                        {/* Filter Pills */}
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <div className="flex items-center gap-2">
+                                <Filter className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm font-medium">Difficulty:</span>
+                            </div>
+                            <Button
+                                variant={selectedDifficulty === 'Easy' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => handleDifficultyFilter('Easy')}
+                                className="difficulty-easy"
+                            >
+                                Easy
+                            </Button>
+                            <Button
+                                variant={selectedDifficulty === 'Medium' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => handleDifficultyFilter('Medium')}
+                                className="difficulty-medium"
+                            >
+                                Medium
+                            </Button>
+                            <Button
+                                variant={selectedDifficulty === 'Hard' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => handleDifficultyFilter('Hard')}
+                                className="difficulty-hard"
+                            >
+                                Hard
+                            </Button>
+
+                            {currentTopic && (
+                                <>
+                                    <div className="h-4 w-px bg-border"></div>
+                                    <Badge variant="secondary" className="gap-2">
+                                        Topic: {getTopicDisplayName(currentTopic)}
+                                        <X
+                                            className="h-3 w-3 cursor-pointer hover:text-destructive"
+                                            onClick={clearTopicFilter}
+                                        />
+                                    </Badge>
+                                </>
+                            )}
+
+                            {(selectedDifficulty || currentTopic) && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        setSelectedDifficulty(null);
+                                        clearTopicFilter();
+                                    }}
+                                    className="text-muted-foreground"
+                                >
+                                    Clear All
+                                </Button>
+                            )}
                         </div>
                     </div>
 
@@ -173,14 +257,14 @@ const Dashboard = () => {
                                 <TableBody>
                                     {questions.map((question) => (
                                         <TableRow
-                                            key={question.questionFrontendId}
+                                            key={question.questionId}
                                             className="cursor-pointer hover:bg-muted/50 transition-colors"
                                             onClick={() =>
                                                 handleQuestionClick(question)
                                             }
                                         >
                                             <TableCell className="font-mono text-sm text-muted-foreground">
-                                                {question.questionFrontendId}
+                                                {question.questionId}
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
@@ -294,4 +378,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default Questions;

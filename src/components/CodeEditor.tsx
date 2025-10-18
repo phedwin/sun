@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Play, RotateCcw, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,77 +32,101 @@ import {
 } from "@/components/ui/select";
 import Editor from "@monaco-editor/react";
 import { editor } from "monaco-editor";
+import { CodeTemplate } from "@/lib/codeTemplates";
 
 export const CodeEditor = () => {
     const [language, setLanguage] = useState("javascript");
+    const [fontFamily, setFontFamily] = useState("Fira Code");
+    const [codeTemplates, setCodeTemplates] = useState<CodeTemplate | null>(null);
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-    
-    // Monaco language mapping
+
+    // monaco language mapping
     const getMonacoLanguage = (lang: string) => {
         const languageMap: { [key: string]: string } = {
             javascript: "javascript",
             python: "python",
             java: "java",
-            cpp: "cpp"
+            cpp: "cpp",
         };
         return languageMap[lang] || "javascript";
     };
-    
-    // Language-based code templates
-    const getCodeTemplate = (lang: string) => {
-        const templates = {
-            javascript: `function twoSum(nums, target) {
-    // Your solution here
-    
-}`,
-            python: `def two_sum(nums, target):
-    # Your solution here
-    pass`,
-            java: `public class Solution {
-    public int[] twoSum(int[] nums, int target) {
-        // Your solution here
-        
-    }
-}`,
-            cpp: `#include <vector>
-using namespace std;
 
-class Solution {
-public:
-    vector<int> twoSum(vector<int>& nums, int target) {
-        // Your solution here
-        
-    }
-};`
+    // Get code template from stored templates or fallback to simple comment
+    const getCodeTemplate = (lang: string) => {
+        if (codeTemplates) {
+            return codeTemplates[lang as keyof CodeTemplate] || `// Write your code here`;
+        }
+
+        // Fallback to simple comments if no templates are loaded
+        const commentMap: { [key: string]: string } = {
+            javascript: `// Write your code here`,
+            python: "# Write your code here",
+            java: "// Write your code here",
+            cpp: "// Write your code here",
         };
-        return templates[lang] || templates.javascript;
+        return commentMap[lang] || "// Write your code here";
     };
-    
+
     const [code, setCode] = useState(getCodeTemplate("javascript"));
+
+    // Load code templates from localStorage on mount
+    useEffect(() => {
+        const storedTemplates = localStorage.getItem("codeTemplates");
+        if (storedTemplates) {
+            try {
+                const templates: CodeTemplate = JSON.parse(storedTemplates);
+                setCodeTemplates(templates);
+                // Update code with the loaded template for current language
+                setCode(templates[language as keyof CodeTemplate] || getCodeTemplate(language));
+            } catch (error) {
+                console.error("Error parsing code templates:", error);
+            }
+        }
+    }, []);
 
     // Handle Monaco editor mount
     const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor) => {
         editorRef.current = editor;
-        
+
         // Configure editor options
         editor.updateOptions({
             fontSize: 14,
-            fontFamily: 'Cascadia Code, Consolas, Monaco, monospace',
+            fontFamily: `${fontFamily}, Consolas, Monaco, monospace`,
             tabSize: 4,
             insertSpaces: true,
             automaticLayout: true,
+            fontLigatures: true,
         });
     };
-    
+
+    // Update font when changed
+    const handleFontChange = (newFont: string) => {
+        setFontFamily(newFont);
+        if (editorRef.current) {
+            editorRef.current.updateOptions({
+                fontFamily: `${newFont}, Consolas, Monaco, monospace`,
+            });
+        }
+    };
+
     // Update code template when language changes
     const handleLanguageChange = (newLang: string) => {
         setLanguage(newLang);
-        setCode(getCodeTemplate(newLang));
+        // Use the template from codeTemplates if available
+        if (codeTemplates) {
+            setCode(codeTemplates[newLang as keyof CodeTemplate] || getCodeTemplate(newLang));
+        } else {
+            setCode(getCodeTemplate(newLang));
+        }
     };
-    
+
     // Handle reset button
     const handleReset = () => {
-        setCode(getCodeTemplate(language));
+        if (codeTemplates) {
+            setCode(codeTemplates[language as keyof CodeTemplate] || getCodeTemplate(language));
+        } else {
+            setCode(getCodeTemplate(language));
+        }
     };
 
     return (
@@ -110,7 +134,10 @@ public:
             {/* Editor Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center gap-3">
-                    <Select value={language} onValueChange={handleLanguageChange}>
+                    <Select
+                        value={language}
+                        onValueChange={handleLanguageChange}
+                    >
                         <SelectTrigger className="w-32">
                             <SelectValue />
                         </SelectTrigger>
@@ -123,6 +150,23 @@ public:
                             <SelectItem value="cpp">C++</SelectItem>
                         </SelectContent>
                     </Select>
+
+                    <Select
+                        value={fontFamily}
+                        onValueChange={handleFontChange}
+                    >
+                        <SelectTrigger className="w-40">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Fira Code">Fira Code</SelectItem>
+                            <SelectItem value="Cascadia Code">Cascadia Code</SelectItem>
+                            <SelectItem value="Monaspace Argon">Monaspace Argon</SelectItem>
+                            <SelectItem value="Monaspace Neon">Monaspace Neon</SelectItem>
+                            <SelectItem value="Monaco">Monaco</SelectItem>
+                            <SelectItem value="Consolas">Consolas</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -132,11 +176,56 @@ public:
                     <Button variant="ghost" size="sm">
                         <Settings className="h-4 w-4" />
                     </Button>
-                    <Button 
+                    <Button
                         className="bg-primary hover:bg-primary-hover text-primary-foreground glow-effect"
-                        onClick={() => {
-                            // Future: implement code execution
-                            console.log('Code execution not yet implemented');
+                        onClick={async () => {
+                            if (language === "python") {
+                                try {
+                                    // @ts-ignore
+                                    if (!window.pyodide) {
+                                        await new Promise<void>(
+                                            (resolve, reject) => {
+                                                const script =
+                                                    document.createElement(
+                                                        "script"
+                                                    );
+                                                script.src =
+                                                    "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js";
+                                                script.onload = () => resolve();
+                                                script.onerror = () =>
+                                                    reject(
+                                                        new Error(
+                                                            "Failed to load Pyodide"
+                                                        )
+                                                    );
+                                                document.body.appendChild(
+                                                    script
+                                                );
+                                            }
+                                        );
+                                        // @ts-ignore
+                                        window.pyodide = await (
+                                            window as any
+                                        ).loadPyodide();
+                                    }
+
+                                    // @ts-ignore
+                                    const pyodide = window.pyodide;
+
+                                    // Run Python code
+                                    // `code` is whatever the user has written in your editor
+                                    const result =
+                                        await pyodide.runPythonAsync(code);
+
+                                    console.log("Python output:", result);
+                                } catch (err) {
+                                    console.error("Python error:", err);
+                                }
+                            } else {
+                                console.log(
+                                    "Code execution not yet implemented for this language"
+                                );
+                            }
                         }}
                     >
                         <Play className="h-4 w-4 mr-2" />
@@ -168,7 +257,7 @@ public:
                     }}
                 />
             </div>
-            {/* Output Panel */}
+            {/* TODO Output Panel  */}
             <div className="h-32 border-t border-border bg-surface-elevated">
                 <div className="p-4">
                     <div className="flex items-center gap-2 mb-2">

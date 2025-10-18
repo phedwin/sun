@@ -44,3 +44,67 @@ export const mockQuestions: Question[] = Array.from({ length: 30 }, (_, i) => ({
     submissions: Math.floor(Math.random() * 10000) + 1000,
     timeLimit: "2 hours",
 }));
+
+// export async function mockQuestions(): Promise<Question[]> {
+//     /* Fetch 100 questions in parallel */
+
+//     const fetchPromises = Array.from({ length: 100 }, (_, idx) => {
+//         const i = idx + 1;
+//         return fetch(`https://leetcode-api-pied.vercel.app/problem/${i}`)
+//             .then(async (res) => {
+//                 if (!res.ok) {
+//                     console.warn(
+//                         `Fetch failed for problem ${i}: ${res.status} ${res.statusText}`
+//                     );
+//                     return null;
+//                 }
+//                 const data = await res.json();
+
+//                 let acRate = 0;
+//                 let submissions = 0;
+//                 try {
+//                     const stats = JSON.parse(data.stats);
+//                     if (
+//                         typeof stats.acRate === "string" &&
+//                         stats.acRate.includes("%")
+//                     ) {
+//                         acRate = parseFloat(stats.acRate.replace("%", ""));
+//                     } else if (typeof stats.acRate === "number") {
+//                         acRate = stats.acRate;
+//                     } else {
+//                         acRate = 0;
+//                     }
+//                     submissions = stats.totalSubmissionRaw;
+//                 } catch (_) {
+//                     acRate = 0;
+//                     submissions = 0;
+//                 }
+
+//                 // description may contain HTML; if you want to sanitize, do it here
+//                 // For now, we leave it as-is. To strip HTML, use a library or a simple regex.
+
+//                 return {
+//                     id: data.questionId,
+//                     title: data.title,
+//                     difficulty: data.difficulty as "Easy" | "Medium" | "Hard",
+//                     description: data.content, // contains HTML (leave as-is)
+//                     category: data.categoryTitle || "General",
+//                     acceptanceRate: acRate,
+//                     submissions: submissions,
+//                     timeLimit: "2 hours",
+//                 } as Question;
+//             })
+//             .catch((err) => {
+//                 console.error(`Failed to fetch problem ${i}`, err);
+//                 return null;
+//             });
+//         // Uncomment the next line to debug fetched questions
+//     });
+
+//     const questions = (await Promise.all(fetchPromises)).filter(
+//         (q): q is Question => q !== null
+//     );
+//     console.log(questions);
+
+//     return questions;
+// }
