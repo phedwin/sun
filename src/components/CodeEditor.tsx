@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Play, RotateCcw, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,10 +32,14 @@ import {
 } from "@/components/ui/select";
 import Editor from "@monaco-editor/react";
 import { editor } from "monaco-editor";
+import { CodeTemplate } from "@/lib/codeTemplates";
 
 export const CodeEditor = () => {
     const [language, setLanguage] = useState("javascript");
+    const [fontFamily, setFontFamily] = useState("Fira Code");
+    const [codeTemplates, setCodeTemplates] = useState<CodeTemplate | null>(null);
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+
     // monaco language mapping
     const getMonacoLanguage = (lang: string) => {
         const languageMap: { [key: string]: string } = {
@@ -47,8 +51,13 @@ export const CodeEditor = () => {
         return languageMap[lang] || "javascript";
     };
 
-    // Language-based code templates (just a comment for each language)
+    // Get code template from stored templates or fallback to simple comment
     const getCodeTemplate = (lang: string) => {
+        if (codeTemplates) {
+            return codeTemplates[lang as keyof CodeTemplate] || `// Write your code here`;
+        }
+
+        // Fallback to simple comments if no templates are loaded
         const commentMap: { [key: string]: string } = {
             javascript: `// Write your code here`,
             python: "# Write your code here",
@@ -60,6 +69,21 @@ export const CodeEditor = () => {
 
     const [code, setCode] = useState(getCodeTemplate("javascript"));
 
+    // Load code templates from localStorage on mount
+    useEffect(() => {
+        const storedTemplates = localStorage.getItem("codeTemplates");
+        if (storedTemplates) {
+            try {
+                const templates: CodeTemplate = JSON.parse(storedTemplates);
+                setCodeTemplates(templates);
+                // Update code with the loaded template for current language
+                setCode(templates[language as keyof CodeTemplate] || getCodeTemplate(language));
+            } catch (error) {
+                console.error("Error parsing code templates:", error);
+            }
+        }
+    }, []);
+
     // Handle Monaco editor mount
     const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor) => {
         editorRef.current = editor;
@@ -67,22 +91,42 @@ export const CodeEditor = () => {
         // Configure editor options
         editor.updateOptions({
             fontSize: 14,
-            fontFamily: "Cascadia Code, Consolas, Monaco, monospace",
+            fontFamily: `${fontFamily}, Consolas, Monaco, monospace`,
             tabSize: 4,
             insertSpaces: true,
             automaticLayout: true,
+            fontLigatures: true,
         });
+    };
+
+    // Update font when changed
+    const handleFontChange = (newFont: string) => {
+        setFontFamily(newFont);
+        if (editorRef.current) {
+            editorRef.current.updateOptions({
+                fontFamily: `${newFont}, Consolas, Monaco, monospace`,
+            });
+        }
     };
 
     // Update code template when language changes
     const handleLanguageChange = (newLang: string) => {
         setLanguage(newLang);
-        setCode(getCodeTemplate(newLang));
+        // Use the template from codeTemplates if available
+        if (codeTemplates) {
+            setCode(codeTemplates[newLang as keyof CodeTemplate] || getCodeTemplate(newLang));
+        } else {
+            setCode(getCodeTemplate(newLang));
+        }
     };
 
     // Handle reset button
     const handleReset = () => {
-        setCode(getCodeTemplate(language));
+        if (codeTemplates) {
+            setCode(codeTemplates[language as keyof CodeTemplate] || getCodeTemplate(language));
+        } else {
+            setCode(getCodeTemplate(language));
+        }
     };
 
     return (
@@ -104,6 +148,23 @@ export const CodeEditor = () => {
                             <SelectItem value="python">Python</SelectItem>
                             <SelectItem value="java">Java</SelectItem>
                             <SelectItem value="cpp">C++</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Select
+                        value={fontFamily}
+                        onValueChange={handleFontChange}
+                    >
+                        <SelectTrigger className="w-40">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Fira Code">Fira Code</SelectItem>
+                            <SelectItem value="Cascadia Code">Cascadia Code</SelectItem>
+                            <SelectItem value="Monaspace Argon">Monaspace Argon</SelectItem>
+                            <SelectItem value="Monaspace Neon">Monaspace Neon</SelectItem>
+                            <SelectItem value="Monaco">Monaco</SelectItem>
+                            <SelectItem value="Consolas">Consolas</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

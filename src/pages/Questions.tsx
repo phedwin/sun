@@ -38,14 +38,14 @@ import {
 import { PAGINATE } from "@/lib/CONSTATS";
 import { getDifficultyColor } from "@/lib/island";
 import FooterComponent from "@/components/Footer";
-import { fetchFilteredProblems, LeetCodeProblem } from "@/lib/leetcodeApi";
+import { fetchQuestions, Question } from "@/lib/api";
 
 const Questions = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [allQuestions, setAllQuestions] = useState<LeetCodeProblem[]>([]);
-    const [questions, setQuestions] = useState<LeetCodeProblem[]>([]);
+    const [questions, setQuestions] = useState<Question[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [totalQuestions, setTotalQuestions] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedDifficulty, setSelectedDifficulty] = useState<'Easy' | 'Medium' | 'Hard' | null>(null);
@@ -64,15 +64,15 @@ const Questions = () => {
             try {
                 setLoading(true);
                 setError(null);
-                const problems = await fetchFilteredProblems(
-                    500,
-                    0,
-                    selectedDifficulty || undefined,
-                    currentTopic || undefined
-                );
-                setAllQuestions(problems);
-                setTotalPages(Math.ceil(problems.length / PAGINATE));
-                setCurrentPage(1); // Reset to first page when filters change
+                const response = await fetchQuestions({
+                    page: currentPage,
+                    limit: PAGINATE,
+                    difficulty: selectedDifficulty || undefined,
+                    topic: currentTopic || undefined
+                });
+                setQuestions(response.data);
+                setTotalPages(response.pagination.totalPages);
+                setTotalQuestions(response.pagination.total);
             } catch (err) {
                 setError('Failed to load questions. Please try again later.');
                 console.error('Error loading questions:', err);
@@ -82,22 +82,11 @@ const Questions = () => {
         };
 
         loadQuestions();
-    }, [selectedDifficulty, currentTopic]);
+    }, [selectedDifficulty, currentTopic, currentPage]);
 
-    // Update displayed questions when page changes
-    useEffect(() => {
-        if (allQuestions.length > 0) {
-            const startIndex = (currentPage - 1) * PAGINATE;
-            const endIndex = startIndex + PAGINATE;
-            const pageQuestions = allQuestions.slice(startIndex, endIndex);
-            setQuestions(pageQuestions);
-        }
-    }, [currentPage, allQuestions]);
-
-    // Store the selected question in localStorage to pass to /code page
-    const handleQuestionClick = (question: LeetCodeProblem) => {
-        localStorage.setItem("selectedQuestion", JSON.stringify(question));
-        navigate("/code");
+    // Navigate to code platform with question slug in URL
+    const handleQuestionClick = (question: Question) => {
+        navigate(`/code?question=${question.slug}`);
     };
 
     const handlePageChange = (page: number) => {
@@ -140,7 +129,7 @@ const Questions = () => {
                                     {currentTopic ? getTopicDisplayName(currentTopic) : 'All'} Problems
                                 </h1>
                                 <p className="text-text-secondary mt-2">
-                                    {allQuestions.length} {selectedDifficulty ? selectedDifficulty.toLowerCase() : ''} problems
+                                    {totalQuestions} {selectedDifficulty ? selectedDifficulty.toLowerCase() : ''} problems
                                     {currentTopic && ` in ${getTopicDisplayName(currentTopic)}`}
                                 </p>
                             </div>
@@ -268,14 +257,14 @@ const Questions = () => {
                                 <TableBody>
                                     {questions.map((question) => (
                                         <TableRow
-                                            key={question.questionFrontendId}
+                                            key={question.questionId}
                                             className="cursor-pointer hover:bg-muted/50 transition-colors"
                                             onClick={() =>
                                                 handleQuestionClick(question)
                                             }
                                         >
                                             <TableCell className="font-mono text-sm text-muted-foreground">
-                                                {question.questionFrontendId}
+                                                {question.questionId}
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">

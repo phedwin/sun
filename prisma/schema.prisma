@@ -3,10 +3,149 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  avatar        String?
+  provider      String    // "google" or "facebook"
+  providerId    String    // OAuth provider user ID
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime  @default(now())
+
+  // Relations
+  sessions      Session[]
+  progress      Progress[]
+  roomMembers   RoomMember[]
+  createdRooms  Room[]    @relation("RoomCreator")
+
+  @@unique([provider, providerId])
+  @@index([email])
+}
+
+// Session management
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+// Store all LeetCode questions
+model Question {
+  id                  String   @id @default(cuid())
+  questionId          String   @unique // LeetCode question ID (e.g., "1")
+  slug                String   @unique // URL-friendly slug (e.g., "two-sum")
+  title               String
+  difficulty          String   // "Easy", "Medium", "Hard"
+  acRate              Float?   // Acceptance rate
+  isPaidOnly          Boolean  @default(false)
+
+  // Content fields
+  description         String?  // HTML content
+  exampleTestcases    String?  // Example test cases
+  hints               String?  // JSON array of hints
+
+  // Metadata
+  topicTags           String   // JSON array of topic tags
+  likes               Int      @default(0)
+  dislikes            Int      @default(0)
+  similarQuestions    String?  // JSON array of similar questions
+
+  // Timestamps
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  progress            Progress[]
+
+  @@index([difficulty])
+  @@index([slug])
+  @@index([isPaidOnly])
+}
+
+// Track user progress on problems
+model Progress {
+  id              String   @id @default(cuid())
+  userId          String
+  questionId      String   // References Question.questionId
+  questionSlug    String   // References Question.slug
+  questionTitle   String
+  difficulty      String   // "Easy", "Medium", "Hard"
+  status          String   // "attempted", "solved"
+  language        String?  // Programming language used
+  code            String?  // Last submitted code
+  attempts        Int      @default(1)
+  firstAttemptAt  DateTime @default(now())
+  lastAttemptAt   DateTime @default(now())
+  solvedAt        DateTime?
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question        Question? @relation(fields: [questionId], references: [questionId])
+
+  @@unique([userId, questionId])
+  @@index([userId])
+  @@index([status])
+  @@index([difficulty])
+}
+
+// Streak tracking
+model Streak {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastActiveDate DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Collaborative rooms (like Discord servers)
+model Room {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  creatorId   String
+  isPublic    Boolean  @default(true)
+  maxMembers  Int      @default(10)
+  currentProblem String? // Current problem slug
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator     User     @relation("RoomCreator", fields: [creatorId], references: [id])
+  members     RoomMember[]
+
+  @@index([creatorId])
+  @@index([isPublic])
+}
+
+// Room membership
+model RoomMember {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  role      String   @default("member") // "owner", "admin", "member"
+  joinedAt  DateTime @default(now())
+
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+  @@index([roomId])
+  @@index([userId])
 }

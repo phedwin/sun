@@ -98,15 +98,29 @@ export async function fetchProblemDetail(
  * @param topic - Filter by topic tag
  */
 export async function fetchFilteredProblems(
-  limit: number = 500,
+  limit: number = 3000,
   skip: number = 0,
   difficulty?: 'Easy' | 'Medium' | 'Hard',
   topic?: string
 ): Promise<LeetCodeProblem[]> {
   try {
-    // Fetch a larger set to ensure we have enough after filtering
-    const response = await fetchProblems(limit, skip);
-    let problems = response.problemsetQuestionList;
+    // Fetch a large set with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+    const response = await fetch(
+      `${API_BASE_URL}/problems?limit=${limit}&skip=${skip}`,
+      { signal: controller.signal }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch problems: ${response.statusText}`);
+    }
+
+    const data: LeetCodeProblemsResponse = await response.json();
+    let problems = data.problemsetQuestionList;
 
     // Filter by difficulty if provided
     if (difficulty) {
@@ -115,10 +129,13 @@ export async function fetchFilteredProblems(
 
     // Filter by topic if provided
     if (topic) {
+      const normalizedTopic = topic.toLowerCase().replace(/\s+/g, '-');
       problems = problems.filter(p =>
         p.topicTags.some(tag =>
-          tag.slug === topic.toLowerCase().replace(/\s+/g, '-') ||
-          tag.name.toLowerCase() === topic.toLowerCase()
+          tag.slug === normalizedTopic ||
+          tag.name.toLowerCase() === topic.toLowerCase() ||
+          tag.slug.toLowerCase().includes(normalizedTopic) ||
+          normalizedTopic.includes(tag.slug.toLowerCase())
         )
       );
     }
@@ -135,10 +152,25 @@ export async function fetchFilteredProblems(
  */
 export async function getTopicTags(): Promise<Array<{name: string, slug: string, count: number}>> {
   try {
-    const response = await fetchProblems(500, 0);
+    // Fetch with timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    const response = await fetch(
+      `${API_BASE_URL}/problems?limit=200&skip=0`,
+      { signal: controller.signal }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.statusText}`);
+    }
+
+    const data: LeetCodeProblemsResponse = await response.json();
     const tagMap = new Map<string, {name: string, slug: string, count: number}>();
 
-    response.problemsetQuestionList.forEach(problem => {
+    data.problemsetQuestionList.forEach(problem => {
       problem.topicTags.forEach(tag => {
         if (tagMap.has(tag.slug)) {
           const existing = tagMap.get(tag.slug)!;
@@ -152,6 +184,24 @@ export async function getTopicTags(): Promise<Array<{name: string, slug: string,
     return Array.from(tagMap.values()).sort((a, b) => b.count - a.count);
   } catch (error) {
     console.error('Error fetching topic tags:', error);
-    throw error;
+    // Return fallback topics if API fails
+    return [
+      { name: 'Array', slug: 'array', count: 50 },
+      { name: 'String', slug: 'string', count: 45 },
+      { name: 'Hash Table', slug: 'hash-table', count: 40 },
+      { name: 'Dynamic Programming', slug: 'dynamic-programming', count: 35 },
+      { name: 'Math', slug: 'math', count: 30 },
+      { name: 'Sorting', slug: 'sorting', count: 28 },
+      { name: 'Greedy', slug: 'greedy', count: 25 },
+      { name: 'Binary Search', slug: 'binary-search', count: 22 },
+      { name: 'Tree', slug: 'tree', count: 20 },
+      { name: 'Graph', slug: 'graph', count: 18 },
+      { name: 'Stack', slug: 'stack', count: 16 },
+      { name: 'Linked List', slug: 'linked-list', count: 15 },
+      { name: 'Database', slug: 'database', count: 12 },
+      { name: 'Binary Tree', slug: 'binary-tree', count: 10 },
+      { name: 'Depth-First Search', slug: 'depth-first-search', count: 10 },
+      { name: 'Breadth-First Search', slug: 'breadth-first-search', count: 10 },
+    ];
   }
 }
