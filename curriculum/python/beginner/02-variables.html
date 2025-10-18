@@ -1,0 +1,88 @@
+<div class="curriculum-content">
+    <h1>Variables and Data Types</h1>
+
+    <p>
+        Variables are containers for storing data values. In Python, you don't
+        need to declare the type of a variable - Python figures it out
+        automatically!
+    </p>
+
+    <h2>Creating Variables</h2>
+    <p>To create a variable, you simply assign a value to a name:</p>
+
+    <pre><code class="language-python">message = "Hello, Python!"
+age = 25
+price = 19.99
+is_student = True</code></pre>
+
+    <h2>Basic Data Types</h2>
+
+    <h3>1. Strings (str)</h3>
+    <p>Text data enclosed in quotes:</p>
+    <pre><code class="language-python">name = "Alice"
+greeting = 'Hello'
+multiline = """This is a
+multiline string"""</code></pre>
+
+    <h3>2. Integers (int)</h3>
+    <p>Whole numbers without decimals:</p>
+    <pre><code class="language-python">count = 42
+negative = -17
+big_number = 1_000_000  # Underscores for readability</code></pre>
+
+    <h3>3. Floats (float)</h3>
+    <p>Numbers with decimal points:</p>
+    <pre><code class="language-python">pi = 3.14159
+temperature = -40.5
+scientific = 2.5e-3  # 0.0025</code></pre>
+
+    <h3>4. Booleans (bool)</h3>
+    <p>True or False values:</p>
+    <pre><code class="language-python">is_active = True
+is_deleted = False</code></pre>
+
+    <h2>Variable Naming Rules</h2>
+    <ul>
+        <li>Must start with a letter or underscore</li>
+        <li>Can contain letters, numbers, and underscores</li>
+        <li>
+            Case-sensitive (<code>name</code> and <code>Name</code> are
+            different)
+        </li>
+        <li>
+            Cannot use Python keywords (<code>if</code>, <code>for</code>,
+            <code>while</code>, etc.)
+        </li>
+    </ul>
+
+    <h2>Type Checking and Conversion</h2>
+    <pre><code class="language-python"># Check type
+print(type(42))          # &lt;class 'int'&gt;
+print(type(3.14))        # &lt;class 'float'&gt;
+print(type("Hello"))     # &lt;class 'str'&gt;
+
+# Convert types
+age = int("25")          # String to integer
+price = float("19.99")   # String to float
+text = str(100)          # Integer to string</code></pre>
+
+    <h2>Practice Exercise</h2>
+    <div class="exercise">
+        <p>Create variables for:</p>
+        <ol>
+            <li>Your name (string)</li>
+            <li>Your age (integer)</li>
+            <li>Your height in meters (float)</li>
+            <li>Whether you like Python (boolean)</li>
+        </ol>
+        <p>Then print them all using the <code>print()</code> function!</p>
+    </div>
+
+    <div class="note">
+        <h3>💡 Best Practice</h3>
+        <p>
+            Use descriptive variable names! <code>user_age</code> is better than
+            <code>a</code>.
+        </p>
+    </div>
+</div>

@@ -1,24 +1,24 @@
 /*
- * CJLF LICENSE (c) 2025
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+KWADA LICENSE (c) 2025
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -38,23 +38,26 @@ import {
 import { PAGINATE } from "@/lib/CONSTATS";
 import { getDifficultyColor } from "@/lib/island";
 import FooterComponent from "@/components/Footer";
-import { fetchQuestions, Question } from "@/lib/api";
+import { fetchFilteredProblems, LeetCodeProblem } from "@/lib/leetcodeApi";
 
 const Questions = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [questions, setQuestions] = useState<Question[]>([]);
+    const [questions, setQuestions] = useState<LeetCodeProblem[]>([]);
+    const [allQuestions, setAllQuestions] = useState<LeetCodeProblem[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedDifficulty, setSelectedDifficulty] = useState<'Easy' | 'Medium' | 'Hard' | null>(null);
+    const [selectedDifficulty, setSelectedDifficulty] = useState<
+        "Easy" | "Medium" | "Hard" | null
+    >(null);
     const [currentTopic, setCurrentTopic] = useState<string | null>(null);
     const navigate = useNavigate();
 
     // Get topic from URL params
     useEffect(() => {
-        const topic = searchParams.get('topic');
+        const topic = searchParams.get("topic");
         setCurrentTopic(topic);
     }, [searchParams]);
 
@@ -64,29 +67,42 @@ const Questions = () => {
             try {
                 setLoading(true);
                 setError(null);
-                const response = await fetchQuestions({
-                    page: currentPage,
-                    limit: PAGINATE,
-                    difficulty: selectedDifficulty || undefined,
-                    topic: currentTopic || undefined
-                });
-                setQuestions(response.data);
-                setTotalPages(response.pagination.totalPages);
-                setTotalQuestions(response.pagination.total);
+                const problems = await fetchFilteredProblems(
+                    500,
+                    0,
+                    selectedDifficulty || undefined,
+                    currentTopic || undefined
+                );
+                setAllQuestions(problems);
+                setTotalQuestions(problems.length);
+                setTotalPages(Math.ceil(problems.length / PAGINATE));
+                // Reset to page 1 when filters change
+                setCurrentPage(1);
             } catch (err) {
-                setError('Failed to load questions. Please try again later.');
-                console.error('Error loading questions:', err);
+                const errorMessage =
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to load questions. Please try again later.";
+                setError(errorMessage);
+                console.error("Error loading questions:", err);
             } finally {
                 setLoading(false);
             }
         };
 
         loadQuestions();
-    }, [selectedDifficulty, currentTopic, currentPage]);
+    }, [selectedDifficulty, currentTopic]);
+
+    // Paginate questions client-side
+    useEffect(() => {
+        const startIndex = (currentPage - 1) * PAGINATE;
+        const endIndex = startIndex + PAGINATE;
+        setQuestions(allQuestions.slice(startIndex, endIndex));
+    }, [allQuestions, currentPage]);
 
     // Navigate to code platform with question slug in URL
-    const handleQuestionClick = (question: Question) => {
-        navigate(`/code?question=${question.slug}`);
+    const handleQuestionClick = (question: LeetCodeProblem) => {
+        navigate(`/code?question=${question.titleSlug}`);
     };
 
     const handlePageChange = (page: number) => {
@@ -95,7 +111,7 @@ const Questions = () => {
         }
     };
 
-    const handleDifficultyFilter = (difficulty: 'Easy' | 'Medium' | 'Hard') => {
+    const handleDifficultyFilter = (difficulty: "Easy" | "Medium" | "Hard") => {
         if (selectedDifficulty === difficulty) {
             setSelectedDifficulty(null);
         } else {
@@ -110,9 +126,10 @@ const Questions = () => {
 
     const getTopicDisplayName = (slug: string | null) => {
         if (!slug) return null;
-        return slug.split('-').map(word =>
-            word.charAt(0).toUpperCase() + word.slice(1)
-        ).join(' ');
+        return slug
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
     };
 
     return (
@@ -126,11 +143,19 @@ const Questions = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <h1 className="text-3xl font-bold">
-                                    {currentTopic ? getTopicDisplayName(currentTopic) : 'All'} Problems
+                                    {currentTopic
+                                        ? getTopicDisplayName(currentTopic)
+                                        : "All"}{" "}
+                                    Problems
                                 </h1>
                                 <p className="text-text-secondary mt-2">
-                                    {totalQuestions} {selectedDifficulty ? selectedDifficulty.toLowerCase() : ''} problems
-                                    {currentTopic && ` in ${getTopicDisplayName(currentTopic)}`}
+                                    {totalQuestions}{" "}
+                                    {selectedDifficulty
+                                        ? selectedDifficulty.toLowerCase()
+                                        : ""}{" "}
+                                    problems
+                                    {currentTopic &&
+                                        ` in ${getTopicDisplayName(currentTopic)}`}
                                 </p>
                             </div>
                             <div className="flex items-center gap-4 text-sm text-text-secondary">
@@ -144,28 +169,42 @@ const Questions = () => {
                         <div className="flex items-center gap-3 flex-wrap">
                             <div className="flex items-center gap-2">
                                 <Filter className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm font-medium">Difficulty:</span>
+                                <span className="text-sm font-medium">
+                                    Difficulty:
+                                </span>
                             </div>
                             <Button
-                                variant={selectedDifficulty === 'Easy' ? 'default' : 'outline'}
+                                variant={
+                                    selectedDifficulty === "Easy"
+                                        ? "default"
+                                        : "outline"
+                                }
                                 size="sm"
-                                onClick={() => handleDifficultyFilter('Easy')}
+                                onClick={() => handleDifficultyFilter("Easy")}
                                 className="difficulty-easy"
                             >
                                 Easy
                             </Button>
                             <Button
-                                variant={selectedDifficulty === 'Medium' ? 'default' : 'outline'}
+                                variant={
+                                    selectedDifficulty === "Medium"
+                                        ? "default"
+                                        : "outline"
+                                }
                                 size="sm"
-                                onClick={() => handleDifficultyFilter('Medium')}
+                                onClick={() => handleDifficultyFilter("Medium")}
                                 className="difficulty-medium"
                             >
                                 Medium
                             </Button>
                             <Button
-                                variant={selectedDifficulty === 'Hard' ? 'default' : 'outline'}
+                                variant={
+                                    selectedDifficulty === "Hard"
+                                        ? "default"
+                                        : "outline"
+                                }
                                 size="sm"
-                                onClick={() => handleDifficultyFilter('Hard')}
+                                onClick={() => handleDifficultyFilter("Hard")}
                                 className="difficulty-hard"
                             >
                                 Hard
@@ -174,8 +213,12 @@ const Questions = () => {
                             {currentTopic && (
                                 <>
                                     <div className="h-4 w-px bg-border"></div>
-                                    <Badge variant="secondary" className="gap-2">
-                                        Topic: {getTopicDisplayName(currentTopic)}
+                                    <Badge
+                                        variant="secondary"
+                                        className="gap-2"
+                                    >
+                                        Topic:{" "}
+                                        {getTopicDisplayName(currentTopic)}
                                         <X
                                             className="h-3 w-3 cursor-pointer hover:text-destructive"
                                             onClick={clearTopicFilter}
@@ -202,7 +245,9 @@ const Questions = () => {
 
                     {error && (
                         <div className="rounded-lg border border-red-500 bg-red-50 dark:bg-red-950 p-4">
-                            <p className="text-red-800 dark:text-red-200">{error}</p>
+                            <p className="text-red-800 dark:text-red-200">
+                                {error}
+                            </p>
                         </div>
                     )}
 
@@ -255,16 +300,22 @@ const Questions = () => {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {questions.map((question) => (
+                                    {questions.map((question, index) => (
                                         <TableRow
-                                            key={question.questionId}
+                                            key={question.questionFrontendId}
                                             className="cursor-pointer hover:bg-muted/50 transition-colors"
                                             onClick={() =>
                                                 handleQuestionClick(question)
                                             }
                                         >
                                             <TableCell className="font-mono text-sm text-muted-foreground">
-                                                {question.questionId}
+                                                {currentTopic ||
+                                                selectedDifficulty
+                                                    ? (currentPage - 1) *
+                                                          PAGINATE +
+                                                      index +
+                                                      1
+                                                    : question.questionFrontendId}
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
@@ -273,7 +324,9 @@ const Questions = () => {
                                                     </h3>
                                                 </div>
                                                 <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
-                                                    {question.topicTags.map(tag => tag.name).join(', ')}
+                                                    {question.topicTags
+                                                        .map((tag) => tag.name)
+                                                        .join(", ")}
                                                 </p>
                                             </TableCell>
                                             <TableCell>
@@ -299,7 +352,8 @@ const Questions = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline">
-                                                    {question.topicTags[0]?.name || 'General'}
+                                                    {question.topicTags[0]
+                                                        ?.name || "General"}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right font-mono text-sm">

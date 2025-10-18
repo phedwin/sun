@@ -1,0 +1,151 @@
+<div class="curriculum-content">
+    <h1>Building ELF Binaries with Python</h1>
+
+    <p>
+        The Executable and Linkable Format (ELF) is a common standard file
+        format for executable files, object code, shared libraries, and core
+        dumps. In this advanced topic, we'll explore how to generate ELF
+        binaries using Python.
+    </p>
+
+    <h2>What is ELF?</h2>
+    <p>
+        ELF is the standard binary format for Unix and Unix-like systems (Linux,
+        BSD, etc.). Understanding ELF structure is crucial for:
+    </p>
+    <ul>
+        <li>Low-level systems programming</li>
+        <li>Binary analysis and reverse engineering</li>
+        <li>Creating custom loaders and linkers</li>
+        <li>Malware analysis and security research</li>
+    </ul>
+
+    <h2>ELF File Structure</h2>
+    <p>An ELF file consists of:</p>
+    <ul>
+        <li>
+            <strong>ELF Header:</strong> Identifies the file as ELF and provides
+            basic info
+        </li>
+        <li>
+            <strong>Program Headers:</strong> Describe segments for runtime
+            loading
+        </li>
+        <li>
+            <strong>Section Headers:</strong> Describe sections for linking and
+            debugging
+        </li>
+        <li><strong>Sections/Segments:</strong> Actual code and data</li>
+    </ul>
+
+    <h2>Creating a Minimal ELF Binary</h2>
+    <p>
+        Let's create a minimal "Hello, World!" ELF binary from scratch using
+        Python:
+    </p>
+
+    <pre><code class="language-python">#!/usr/bin/env python3
+import struct
+
+# ELF Header (64-bit)
+ELF_HEADER = struct.pack(
+    '16sHHIQQQIHHHHHH',
+    b'\x7fELF\x02\x01\x01\x00' + b'\x00' * 8,  # Magic + padding
+    2,      # e_type: ET_EXEC
+    0x3e,   # e_machine: AMD64
+    1,      # e_version
+    0x400078,  # e_entry: Entry point
+    0x40,   # e_phoff: Program header offset
+    0,      # e_shoff: Section header offset
+    0,      # e_flags
+    64,     # e_ehsize: ELF header size
+    56,     # e_phentsize: Program header entry size
+    1,      # e_phnum: Number of program headers
+    0,      # e_shentsize
+    0,      # e_shnum
+    0       # e_shstrndx
+)
+
+# Program Header
+PROGRAM_HEADER = struct.pack(
+    'IIQQQQQQ',
+    1,      # p_type: PT_LOAD
+    5,      # p_flags: PF_R | PF_X
+    0,      # p_offset
+    0x400000,  # p_vaddr
+    0x400000,  # p_paddr
+    0xb3,   # p_filesz
+    0xb3,   # p_memsz
+    0x1000  # p_align
+)
+
+# Machine code for sys_write and sys_exit
+CODE = bytes([
+    # sys_write(1, msg, 13)
+    0xb8, 0x01, 0x00, 0x00, 0x00,  # mov eax, 1
+    0xbf, 0x01, 0x00, 0x00, 0x00,  # mov edi, 1
+    0x48, 0xbe, 0xa1, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,  # mov rsi, msg
+    0xba, 0x0d, 0x00, 0x00, 0x00,  # mov edx, 13
+    0x0f, 0x05,                     # syscall
+
+    # sys_exit(0)
+    0xb8, 0x3c, 0x00, 0x00, 0x00,  # mov eax, 60
+    0x31, 0xff,                     # xor edi, edi
+    0x0f, 0x05,                     # syscall
+])
+
+MESSAGE = b"Hello, ELF!\n"
+
+# Combine all parts
+with open('hello_elf', 'wb') as f:
+    f.write(ELF_HEADER)
+    f.write(PROGRAM_HEADER)
+    f.write(CODE)
+    f.write(MESSAGE)
+
+print("ELF binary created: hello_elf")
+print("Make it executable: chmod +x hello_elf")
+print("Run it: ./hello_elf")</code></pre>
+
+    <h2>Using Libraries</h2>
+    <p>For production use, consider using libraries like:</p>
+    <ul>
+        <li><strong>pyelftools:</strong> Parse and analyze ELF files</li>
+        <li><strong>LIEF:</strong> Library to Instrument Executable Formats</li>
+        <li><strong>pwntools:</strong> CTF framework with ELF manipulation</li>
+    </ul>
+
+    <pre><code class="language-python">from elftools.elf.elffile import ELFFile
+
+with open('binary', 'rb') as f:
+    elf = ELFFile(f)
+    for section in elf.iter_sections():
+        print(f"Section: {section.name}")</code></pre>
+
+    <h2>Advanced Topics</h2>
+    <ul>
+        <li>Dynamic linking and PLT/GOT</li>
+        <li>RELRO, Stack canaries, and security features</li>
+        <li>Custom section creation</li>
+        <li>Symbol table manipulation</li>
+        <li>Binary patching and hooking</li>
+    </ul>
+
+    <div class="warning">
+        <h3>⚠️ Security Note</h3>
+        <p>
+            Creating and modifying ELF binaries requires deep understanding of
+            system internals. Always test in isolated environments and never
+            execute untrusted binaries!
+        </p>
+    </div>
+
+    <div class="note">
+        <h3>📚 Further Reading</h3>
+        <ul>
+            <li>ELF Specification (TIS Committee)</li>
+            <li>"Linkers and Loaders" by John R. Levine</li>
+            <li>Linux man pages: elf(5)</li>
+        </ul>
+    </div>
+</div>

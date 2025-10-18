@@ -1,24 +1,24 @@
 /*
- * CJLF LICENSE (c) 2025
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+KWADA LICENSE (c) 2025
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -59,8 +59,8 @@ const Dashboard = () => {
                 setAllQuestions(problems);
                 setTotalPages(Math.ceil(problems.length / PAGINATE));
             } catch (err) {
-                setError('Failed to load questions. Please try again later.');
-                console.error('Error loading questions:', err);
+                setError("Failed to load questions. Please try again later.");
+                console.error("Error loading questions:", err);
             } finally {
                 setLoading(false);
             }
@@ -118,7 +118,9 @@ const Dashboard = () => {
 
                     {error && (
                         <div className="rounded-lg border border-red-500 bg-red-50 dark:bg-red-950 p-4">
-                            <p className="text-red-800 dark:text-red-200">{error}</p>
+                            <p className="text-red-800 dark:text-red-200">
+                                {error}
+                            </p>
                         </div>
                     )}
 
@@ -189,7 +191,9 @@ const Dashboard = () => {
                                                     </h3>
                                                 </div>
                                                 <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
-                                                    {question.topicTags.map(tag => tag.name).join(', ')}
+                                                    {question.topicTags
+                                                        .map((tag) => tag.name)
+                                                        .join(", ")}
                                                 </p>
                                             </TableCell>
                                             <TableCell>
@@ -215,7 +219,8 @@ const Dashboard = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline">
-                                                    {question.topicTags[0]?.name || 'General'}
+                                                    {question.topicTags[0]
+                                                        ?.name || "General"}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right font-mono text-sm">
