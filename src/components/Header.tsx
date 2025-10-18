@@ -175,7 +175,7 @@ export const Header = () => {
                                 SUN
                             </span>
                             <span className="text-xs text-muted-foreground -mt-1">
-                                Code Like Africa
+                                Iam. All of Us.
                             </span>
                         </div>
                     </Link>
