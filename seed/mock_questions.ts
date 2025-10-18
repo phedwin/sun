@@ -31,7 +31,6 @@ export interface Question {
     timeLimit?: string;
 }
 
-
 export const mockQuestions: Question[] = Array.from({ length: 30 }, (_, i) => ({
     id: `q-${i + 1}`,
     title: `${["Two Sum", "Reverse Linked List", "Valid Parentheses", "Merge Intervals", "Binary Search"][i % 4]}${i > 3 ? ` ${Math.floor(i / 4) + 1}` : ""}`,
@@ -42,10 +41,3 @@ export const mockQuestions: Question[] = Array.from({ length: 30 }, (_, i) => ({
     submissions: Math.floor(Math.random() * 10000) + 1000,
     timeLimit: "2 hours",
 }));
-
-
-
-
-
-
-

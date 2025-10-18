@@ -30,9 +30,6 @@ else
 server:
 	npm install 
 	npm run dev &
-git:
-	npm run format && node cjlf.js
-	git add . && git commit -a -s
 format:
 	npm run format
 clean:

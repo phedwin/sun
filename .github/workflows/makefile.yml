@@ -17,8 +17,5 @@ jobs:
             - name: Install dependencies
               run: make
 
-            # - name:  Format code
-            #   run: make format
-
-            - name: kill npm
-              run: make kill
+            - name: Format code
+              run: make format
