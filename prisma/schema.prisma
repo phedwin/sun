@@ -120,18 +120,23 @@ model Room {
   id          String   @id @default(cuid())
   name        String
   description String?
+  code        String   @unique // 6-character join code
   creatorId   String
   isPublic    Boolean  @default(true)
   maxMembers  Int      @default(10)
   currentProblem String? // Current problem slug
+  currentCode    String? // Shared code in the room
+  currentLanguage String  @default("javascript")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   creator     User     @relation("RoomCreator", fields: [creatorId], references: [id])
   members     RoomMember[]
+  messages    Message[]
 
   @@index([creatorId])
   @@index([isPublic])
+  @@index([code])
 }
 
 // Room membership
@@ -140,7 +145,10 @@ model RoomMember {
   roomId    String
   userId    String
   role      String   @default("member") // "owner", "admin", "member"
+  isOnline  Boolean  @default(false)
+  color     String?  // User's color in the room
   joinedAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
 
   room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -148,4 +156,21 @@ model RoomMember {
   @@unique([roomId, userId])
   @@index([roomId])
   @@index([userId])
+}
+
+// Chat messages in rooms
+model Message {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  username  String   // Cached for display
+  content   String
+  type      String   @default("text") // "text", "code", "system"
+  createdAt DateTime @default(now())
+
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@index([userId])
+  @@index([createdAt])
 }

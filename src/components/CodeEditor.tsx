@@ -46,7 +46,13 @@ import { CodeTemplate } from "@/lib/codeTemplates";
 import { executeCode, ExecutionResult } from "@/lib/codeExecution";
 import { useTheme } from "next-themes";
 
-export const CodeEditor = () => {
+interface CodeEditorProps {
+    initialCode?: { [key: string]: string };
+    problemSlug?: string;
+    problemTitle?: string;
+}
+
+export const CodeEditor = ({ initialCode, problemSlug, problemTitle }: CodeEditorProps = {}) => {
     const { theme: systemTheme } = useTheme();
     const [language, setLanguage] = useState("javascript");
     const [fontFamily, setFontFamily] = useState("Fira Code");
@@ -89,16 +95,24 @@ export const CodeEditor = () => {
         return commentMap[lang] || "// Write your code here";
     };
 
-    const [code, setCode] = useState(getCodeTemplate("javascript"));
+    const [code, setCode] = useState(
+        initialCode?.javascript || getCodeTemplate("javascript")
+    );
 
-    // Load code templates from localStorage on mount
+    // Load code templates from localStorage on mount or use initialCode
     useEffect(() => {
+        // If initialCode is provided, use it
+        if (initialCode && initialCode[language]) {
+            setCode(initialCode[language]);
+            return;
+        }
+
+        // Otherwise try loading from localStorage
         const storedTemplates = localStorage.getItem("codeTemplates");
         if (storedTemplates) {
             try {
                 const templates: CodeTemplate = JSON.parse(storedTemplates);
                 setCodeTemplates(templates);
-                // Update code with the loaded template for current language
                 setCode(
                     templates[language as keyof CodeTemplate] ||
                         getCodeTemplate(language)
@@ -107,7 +121,7 @@ export const CodeEditor = () => {
                 console.error("Error parsing code templates:", error);
             }
         }
-    }, []);
+    }, [initialCode, language]);
 
     // Auto-switch editor theme based on system theme
     useEffect(() => {
@@ -146,8 +160,10 @@ export const CodeEditor = () => {
     // Update code template when language changes
     const handleLanguageChange = (newLang: string) => {
         setLanguage(newLang);
-        // Use the template from codeTemplates if available
-        if (codeTemplates) {
+        // Use initialCode if provided
+        if (initialCode && initialCode[newLang]) {
+            setCode(initialCode[newLang]);
+        } else if (codeTemplates) {
             setCode(
                 codeTemplates[newLang as keyof CodeTemplate] ||
                     getCodeTemplate(newLang)
@@ -159,7 +175,9 @@ export const CodeEditor = () => {
 
     // Handle reset button
     const handleReset = () => {
-        if (codeTemplates) {
+        if (initialCode && initialCode[language]) {
+            setCode(initialCode[language]);
+        } else if (codeTemplates) {
             setCode(
                 codeTemplates[language as keyof CodeTemplate] ||
                     getCodeTemplate(language)

@@ -153,37 +153,103 @@ const Landing = () => {
         <div className="min-h-screen bg-background">
             <Header />
 
-            <main className="container py-8">
-                <div className="space-y-8">
-                    {/* Hero Section */}
-                    <div className="text-center space-y-4 py-12 relative overflow-hidden">
-                        <div className="absolute inset-0 -z-10">
-                            <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-gradient-to-br from-[hsl(var(--sunset-orange))] to-[hsl(var(--sunset-pink))] opacity-20 blur-3xl animate-[float_6s_ease-in-out_infinite]"></div>
-                            <div className="absolute bottom-20 right-10 w-40 h-40 rounded-full bg-gradient-to-br from-[hsl(var(--savanna-gold))] to-[hsl(var(--sky-blue))] opacity-20 blur-3xl animate-[float_8s_ease-in-out_infinite_2s]"></div>
+            <main className="container px-4">
+                {/* Hero Section - Clean & Minimalist */}
+                <div className="relative min-h-[70vh] flex items-center justify-center py-20">
+                    {/* Floating Icons - Subtle & Beautiful */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        {/* Top Left - Python */}
+                        <div className="absolute top-20 left-[10%] opacity-60" style={{ animation: 'float 6s ease-in-out infinite' }}>
+                            <div className="text-6xl">🐍</div>
                         </div>
-                        <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-[hsl(var(--sunset-orange))] via-[hsl(var(--sunset-pink))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent animate-[float_4s_ease-in-out_infinite]">
-                            Code. Code. Code :D
+
+                        {/* Top Right - Code */}
+                        <div className="absolute top-32 right-[15%] opacity-60" style={{ animation: 'float 7s ease-in-out infinite 1s' }}>
+                            <div className="text-5xl">💻</div>
+                        </div>
+
+                        {/* Middle Left - Brain */}
+                        <div className="absolute top-1/2 left-[8%] opacity-60" style={{ animation: 'float 8s ease-in-out infinite 2s' }}>
+                            <div className="text-5xl">🧠</div>
+                        </div>
+
+                        {/* Middle Right - Rocket */}
+                        <div className="absolute top-1/2 right-[10%] opacity-60" style={{ animation: 'float 6.5s ease-in-out infinite 1.5s' }}>
+                            <div className="text-6xl">🚀</div>
+                        </div>
+
+                        {/* Bottom Left - Book */}
+                        <div className="absolute bottom-32 left-[12%] opacity-60" style={{ animation: 'float 7.5s ease-in-out infinite 0.5s' }}>
+                            <div className="text-5xl">📚</div>
+                        </div>
+
+                        {/* Bottom Right - Trophy */}
+                        <div className="absolute bottom-24 right-[12%] opacity-60" style={{ animation: 'float 6s ease-in-out infinite 2.5s' }}>
+                            <div className="text-5xl">🏆</div>
+                        </div>
+
+                        {/* Subtle gradient orbs */}
+                        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-[hsl(var(--sunset-orange))]/5 blur-3xl"></div>
+                        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-[hsl(var(--savanna-gold))]/5 blur-3xl"></div>
+                    </div>
+
+                    {/* Center Content */}
+                    <div className="relative z-10 text-center space-y-8 max-w-4xl mx-auto">
+                        {/* Sun Icon */}
+                        <div className="text-7xl mb-4">☀️</div>
+
+                        {/* Main Heading */}
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight">
+                            Welcome to <span className="bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">SUN</span>
                         </h1>
-                        <p className="text-2xl text-muted-foreground max-w-3xl mx-auto font-semibold">
-                            Learn to code on a journey through vibrant lessons,
-                            collect beads of wisdom, and unlock your potential!
+
+                        {/* Subheading */}
+                        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                            Your journey to mastering code starts here.
+                            <br />
+                            Simple. Focused. Beautiful.
                         </p>
-                        <div className="flex items-center justify-center gap-6 pt-4">
-                            <Badge
-                                variant="outline"
-                                className="text-lg px-4 py-2 bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--sunset-pink))] text-white border-0"
+
+                        {/* CTA Buttons */}
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+                            <button
+                                onClick={() => navigate("/questions")}
+                                className="px-8 py-3 bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
                             >
-                                {topics.reduce((sum, t) => sum + t.count, 0)}{" "}
-                                Problems
-                            </Badge>
-                            <Badge
-                                variant="outline"
-                                className="text-lg px-4 py-2 bg-gradient-to-r from-[hsl(var(--savanna-gold))] to-[hsl(var(--sky-blue))] text-white border-0"
+                                Explore Problems
+                            </button>
+                            <button
+                                onClick={() => navigate("/server-hub")}
+                                className="px-8 py-3 bg-gradient-to-r from-[hsl(var(--sky-blue))] to-[hsl(var(--bead-blue))] text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2"
                             >
-                                {topics.length} Topics
-                            </Badge>
+                                💬 Join Community
+                            </button>
+                            <button
+                                onClick={() => navigate("/curriculum")}
+                                className="px-8 py-3 bg-background border-2 border-[hsl(var(--sunset-orange))] text-foreground font-semibold rounded-lg hover:bg-[hsl(var(--sunset-orange))]/5 transition-all duration-300"
+                            >
+                                Start Learning
+                            </button>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="flex items-center justify-center gap-12 pt-8 text-sm">
+                            <div className="text-center">
+                                <div className="text-3xl font-bold bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
+                                    {topics.reduce((sum, t) => sum + t.count, 0)}
+                                </div>
+                                <div className="text-muted-foreground mt-1">Problems</div>
+                            </div>
+                            <div className="w-px h-12 bg-border"></div>
+                            <div className="text-center">
+                                <div className="text-3xl font-bold bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
+                                    {topics.length}
+                                </div>
+                                <div className="text-muted-foreground mt-1">Topics</div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
                     {error && (
                         <div className="rounded-lg border border-red-500 bg-red-50 dark:bg-red-950 p-4">
@@ -193,163 +259,113 @@ const Landing = () => {
                         </div>
                     )}
 
-                    {/* Topics Grid */}
+                {/* Topics Section - Clean Grid */}
+                <div className="py-20">
+                    <div className="text-center space-y-3 mb-12">
+                        <h2 className="text-4xl font-bold text-foreground">
+                            Explore Topics
+                        </h2>
+                        <p className="text-lg text-muted-foreground">
+                            Choose a path and begin your learning journey
+                        </p>
+                    </div>
+
                     {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {[...Array(12)].map((_, i) => (
-                                <Card key={i} className="animate-pulse">
-                                    <CardHeader>
-                                        <div className="h-6 bg-muted rounded w-3/4"></div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="h-4 bg-muted rounded w-1/2"></div>
-                                    </CardContent>
-                                </Card>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+                            {[...Array(15)].map((_, i) => (
+                                <div key={i} className="h-28 bg-muted/30 rounded-xl animate-pulse"></div>
                             ))}
                         </div>
                     ) : (
-                        <>
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-semibold">
-                                    Browse by Topic
-                                </h2>
-                                <button
-                                    onClick={handleViewAllClick}
-                                    className="flex items-center gap-2 text-primary hover:underline"
-                                >
-                                    View All Problems
-                                    <ArrowRight className="h-4 w-4" />
-                                </button>
-                            </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+                            {animatedTopics.map(({ topic, delay, color }) => {
+                                const Icon = getTopicIcon(topic.slug);
+                                return (
+                                    <div
+                                        key={topic.slug}
+                                        className="cursor-pointer group"
+                                        style={{
+                                            animation: `fadeIn 0.5s ease-out ${delay}s both`,
+                                        }}
+                                        onClick={() => handleTopicClick(topic.slug)}
+                                    >
+                                        <div className="relative bg-card border border-border rounded-xl p-4 hover:border-[hsl(var(--sunset-orange))]/50 hover:shadow-md transition-all duration-300 h-full flex flex-col items-center justify-center text-center space-y-2">
+                                            {/* Icon */}
+                                            <Icon
+                                                className="h-8 w-8 transition-transform group-hover:scale-110"
+                                                style={{ color, opacity: 0.9 }}
+                                            />
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {animatedTopics.map(
-                                    ({
-                                        topic,
-                                        fromX,
-                                        fromY,
-                                        fromRotate,
-                                        delay,
-                                        color,
-                                    }) => {
-                                        const Icon = getTopicIcon(topic.slug);
-                                        return (
-                                            <Card
-                                                key={topic.slug}
-                                                className="cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300 border-4 group overflow-hidden relative"
-                                                style={{
-                                                    animation: `stackIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
-                                                    // @ts-ignore
-                                                    "--from-x": fromX,
-                                                    "--from-y": fromY,
-                                                    "--from-rotate": fromRotate,
-                                                    borderColor: color,
-                                                }}
-                                                onClick={() =>
-                                                    handleTopicClick(topic.slug)
-                                                }
-                                            >
-                                                <div
-                                                    className="absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20"
-                                                    style={{
-                                                        background: `linear-gradient(135deg, ${color} 0%, transparent 100%)`,
-                                                    }}
-                                                ></div>
-                                                <CardHeader className="pb-3 relative z-10">
-                                                    <div className="flex items-center justify-between">
-                                                        <Icon
-                                                            className="h-10 w-10 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300"
-                                                            style={{ color }}
-                                                        />
-                                                        <Badge
-                                                            className="text-white border-0 text-base px-3 py-1 font-bold"
-                                                            style={{
-                                                                background:
-                                                                    color,
-                                                            }}
-                                                        >
-                                                            {topic.count}
-                                                        </Badge>
-                                                    </div>
-                                                    <CardTitle className="text-xl mt-4 group-hover:scale-105 transition-transform font-bold">
-                                                        {topic.name}
-                                                    </CardTitle>
-                                                </CardHeader>
-                                                <CardContent className="relative z-10">
-                                                    <p className="text-base text-muted-foreground font-semibold">
-                                                        {topic.count}{" "}
-                                                        {topic.count === 1
-                                                            ? "problem"
-                                                            : "problems"}{" "}
-                                                        waiting for you
-                                                    </p>
-                                                </CardContent>
-                                            </Card>
-                                        );
-                                    }
-                                )}
-                            </div>
-                        </>
+                                            {/* Topic Name */}
+                                            <h3 className="font-semibold text-sm leading-tight">
+                                                {topic.name}
+                                            </h3>
+
+                                            {/* Count */}
+                                            <span className="text-xs text-muted-foreground font-medium">
+                                                {topic.count}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     )}
 
-                    {/* Feature Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-16">
-                        <Card
-                            className="text-center cursor-pointer hover:shadow-2xl hover:scale-110 transition-all duration-300 border-4 border-[hsl(var(--sunset-orange))] group overflow-hidden relative bg-gradient-to-br from-[hsl(var(--sunset-orange))]/5 to-transparent"
-                            onClick={() => navigate("/questions")}
+                    <div className="text-center pt-10">
+                        <button
+                            onClick={handleViewAllClick}
+                            className="inline-flex items-center gap-2 px-6 py-2 border-2 border-border rounded-lg hover:border-[hsl(var(--sunset-orange))] hover:text-[hsl(var(--sunset-orange))] transition-all font-medium"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--sunset-orange))]/10 rounded-full blur-2xl"></div>
-                            <CardHeader className="relative z-10">
-                                <Code2 className="h-16 w-16 mx-auto text-[hsl(var(--sunset-orange))] group-hover:scale-125 group-hover:rotate-12 transition-all" />
-                                <CardTitle className="mt-6 text-2xl group-hover:text-[hsl(var(--sunset-orange))] transition-colors font-bold">
-                                    Real LeetCode Problems
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="relative z-10">
-                                <p className="text-muted-foreground text-lg">
-                                    Practice with actual problems from
-                                    LeetCode's extensive library
-                                </p>
-                            </CardContent>
-                        </Card>
+                            View All Problems
+                            <ArrowRight className="h-4 w-4" />
+                        </button>
+                    </div>
+                </div>
 
-                        <Card
-                            className="text-center cursor-pointer hover:shadow-2xl hover:scale-110 transition-all duration-300 border-4 border-[hsl(var(--savanna-gold))] group overflow-hidden relative bg-gradient-to-br from-[hsl(var(--savanna-gold))]/5 to-transparent"
-                            onClick={() => navigate("/curriculum")}
-                        >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--savanna-gold))]/10 rounded-full blur-2xl"></div>
-                            <CardHeader className="relative z-10">
-                                <Zap className="h-16 w-16 mx-auto text-[hsl(var(--savanna-gold))] group-hover:scale-125 group-hover:rotate-12 transition-all" />
-                                <CardTitle className="mt-6 text-2xl group-hover:text-[hsl(var(--savanna-gold))] transition-colors font-bold">
-                                    Journey Through Lessons
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="relative z-10">
-                                <p className="text-muted-foreground text-lg">
-                                    Travel the roadmap, unlock huts of
-                                    knowledge, and collect beads!
+                {/* Feature Section - Simple & Clean */}
+                <div className="py-20 border-t border-border/30">
+                    <div className="max-w-5xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div
+                                className="text-center space-y-3 p-6 rounded-xl hover:bg-muted/20 transition-all cursor-pointer group"
+                                onClick={() => navigate("/questions")}
+                            >
+                                <div className="inline-block p-4 rounded-full bg-[hsl(var(--sunset-orange))]/10 group-hover:bg-[hsl(var(--sunset-orange))]/20 transition-all">
+                                    <Code2 className="h-10 w-10 text-[hsl(var(--sunset-orange))] group-hover:scale-110 transition-transform" />
+                                </div>
+                                <h3 className="font-bold text-xl">Real Problems</h3>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    Practice with LeetCode's extensive library
                                 </p>
-                            </CardContent>
-                        </Card>
+                            </div>
 
-                        <Card
-                            className="text-center cursor-pointer hover:shadow-2xl hover:scale-110 transition-all duration-300 border-4 border-[hsl(var(--sunset-pink))] group overflow-hidden relative bg-gradient-to-br from-[hsl(var(--sunset-pink))]/5 to-transparent"
-                            onClick={() => navigate("/profile")}
-                        >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--sunset-pink))]/10 rounded-full blur-2xl"></div>
-                            <CardHeader className="relative z-10">
-                                <GitBranch className="h-16 w-16 mx-auto text-[hsl(var(--sunset-pink))] group-hover:scale-125 group-hover:rotate-12 transition-all" />
-                                <CardTitle className="mt-6 text-2xl group-hover:text-[hsl(var(--sunset-pink))] transition-colors font-bold">
-                                    Collect Your Beads
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="relative z-10">
-                                <p className="text-muted-foreground text-lg">
-                                    Watch your bead collection grow and climb
-                                    the leaderboard
+                            <div
+                                className="text-center space-y-3 p-6 rounded-xl hover:bg-muted/20 transition-all cursor-pointer group"
+                                onClick={() => navigate("/curriculum")}
+                            >
+                                <div className="inline-block p-4 rounded-full bg-[hsl(var(--savanna-gold))]/10 group-hover:bg-[hsl(var(--savanna-gold))]/20 transition-all">
+                                    <Zap className="h-10 w-10 text-[hsl(var(--savanna-gold))] group-hover:scale-110 transition-transform" />
+                                </div>
+                                <h3 className="font-bold text-xl">Guided Journey</h3>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    Follow a roadmap and collect beads
                                 </p>
-                            </CardContent>
-                        </Card>
+                            </div>
+
+                            <div
+                                className="text-center space-y-3 p-6 rounded-xl hover:bg-muted/20 transition-all cursor-pointer group"
+                                onClick={() => navigate("/profile")}
+                            >
+                                <div className="inline-block p-4 rounded-full bg-[hsl(var(--sunset-pink))]/10 group-hover:bg-[hsl(var(--sunset-pink))]/20 transition-all">
+                                    <GitBranch className="h-10 w-10 text-[hsl(var(--sunset-pink))] group-hover:scale-110 transition-transform" />
+                                </div>
+                                <h3 className="font-bold text-xl">Track Progress</h3>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    Watch your growth and climb the board
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>

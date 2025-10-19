@@ -22,7 +22,37 @@ THE SOFTWARE.
 
 const API_BASE_URL = "https://alfa-leetcode-api.onrender.com";
 
-const CACHE_DURATION = 60 * 60 * 1000;
+const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours cache
+
+// Retry with exponential backoff
+async function fetchWithRetry(url: string, retries = 3, backoff = 1000): Promise<Response> {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            // If rate limited (429), wait and retry
+            if (response.status === 429) {
+                if (i < retries - 1) {
+                    const waitTime = backoff * Math.pow(2, i);
+                    console.log(`Rate limited. Waiting ${waitTime}ms before retry ${i + 1}/${retries}...`);
+                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                    continue;
+                }
+            }
+
+            return response;
+        } catch (error) {
+            if (i === retries - 1) throw error;
+            const waitTime = backoff * Math.pow(2, i);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+    }
+    throw new Error('Max retries reached');
+}
 
 interface CachedData<T> {
     data: T;
@@ -135,18 +165,32 @@ export async function fetchProblems(
 export async function fetchProblemDetail(
     titleSlug: string
 ): Promise<LeetCodeProblemDetail> {
+    const cacheKey = `problem_${titleSlug}`;
+
+    // Try cache first
+    const cached = getCachedData<LeetCodeProblemDetail>(cacheKey);
+    if (cached) {
+        console.log(`✅ Using cached problem "${titleSlug}" (valid for 2 hours)`);
+        return cached;
+    }
+
+    // No cache, fetch from API
     try {
-        const response = await fetch(
+        console.log(`📡 Fetching problem "${titleSlug}" from API...`);
+        const response = await fetchWithRetry(
             `${API_BASE_URL}/select?titleSlug=${titleSlug}`
         );
 
         if (!response.ok) {
-            throw new Error(
-                `Failed to fetch problem detail: ${response.statusText}`
-            );
+            throw new Error(`Failed to fetch problem detail: ${response.statusText}`);
         }
 
         const data: LeetCodeProblemDetail = await response.json();
+
+        // Cache for 2 hours
+        setCachedData(cacheKey, data);
+        console.log(`✅ Problem "${titleSlug}" cached for 2 hours`);
+
         return data;
     } catch (error) {
         console.error("Error fetching problem detail:", error);
@@ -161,57 +205,68 @@ export async function fetchProblemDetail(
  * @param difficulty - Filter by difficulty (Easy, Medium, Hard)
  * @param topic - Filter by topic tag
  */
+import { CACHE_VERSION } from "./CONSTATS";
+
+// Helper function to apply filters and deduplicate
+function applyFiltersAndDeduplicate(
+    problems: LeetCodeProblem[],
+    difficulty?: "Easy" | "Medium" | "Hard",
+    topic?: string
+): LeetCodeProblem[] {
+    let filtered = [...problems];
+
+    // Filter by difficulty if provided
+    if (difficulty) {
+        filtered = filtered.filter((p) => p.difficulty === difficulty);
+    }
+
+    // Filter by topic if provided
+    if (topic) {
+        const normalizedTopic = topic.toLowerCase().replace(/\s+/g, "-");
+        filtered = filtered.filter((p) =>
+            p.topicTags.some(
+                (tag) =>
+                    tag.slug === normalizedTopic ||
+                    tag.name.toLowerCase() === topic.toLowerCase() ||
+                    tag.slug.toLowerCase().includes(normalizedTopic) ||
+                    normalizedTopic.includes(tag.slug.toLowerCase())
+            )
+        );
+    }
+
+    // Deduplicate by questionFrontendId
+    const uniqueProblems = new Map<string, LeetCodeProblem>();
+    filtered.forEach(problem => {
+        uniqueProblems.set(problem.questionFrontendId, problem);
+    });
+
+    return Array.from(uniqueProblems.values());
+}
+
 export async function fetchFilteredProblems(
     limit: number = 500,
     skip: number = 0,
     difficulty?: "Easy" | "Medium" | "Hard",
     topic?: string
 ): Promise<LeetCodeProblem[]> {
-    const cacheKey = `leetcode_problems_${limit}_${skip}`;
+    const cacheKey = `leetcode_problems_${CACHE_VERSION}_${limit}_${skip}`;
 
-    // Try to get from cache first
+    // Try cache first
     const cachedProblems = getCachedData<LeetCodeProblem[]>(cacheKey);
     if (cachedProblems) {
-        console.log("Using cached problems data");
-        let problems = cachedProblems;
-
-        // Apply filters
-        if (difficulty) {
-            problems = problems.filter((p) => p.difficulty === difficulty);
-        }
-
-        if (topic) {
-            const normalizedTopic = topic.toLowerCase().replace(/\s+/g, "-");
-            problems = problems.filter((p) =>
-                p.topicTags.some(
-                    (tag) =>
-                        tag.slug === normalizedTopic ||
-                        tag.name.toLowerCase() === topic.toLowerCase() ||
-                        tag.slug.toLowerCase().includes(normalizedTopic) ||
-                        normalizedTopic.includes(tag.slug.toLowerCase())
-                )
-            );
-        }
-
-        return problems;
+        console.log("✅ Using cached data (valid for 2 hours)");
+        return applyFiltersAndDeduplicate(cachedProblems, difficulty, topic);
     }
 
+    // No cache, fetch from API
     try {
-        // Fetch a large set with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
-        const response = await fetch(
-            `${API_BASE_URL}/problems?limit=${limit}&skip=${skip}`,
-            { signal: controller.signal }
+        console.log("📡 Fetching fresh data from API...");
+        const response = await fetchWithRetry(
+            `${API_BASE_URL}/problems?limit=${limit}&skip=${skip}`
         );
 
-        clearTimeout(timeoutId);
-
         if (!response.ok) {
-            throw new Error(
-                `API Error: ${response.status} ${response.statusText}`
-            );
+            throw new Error(`API Error: ${response.status} ${response.statusText}`);
         }
 
         const data: LeetCodeProblemsResponse = await response.json();
@@ -220,42 +275,21 @@ export async function fetchFilteredProblems(
             throw new Error("Invalid response from LeetCode API");
         }
 
-        let problems = data.problemsetQuestionList;
+        // DEDUPLICATE BEFORE CACHING using Set with questionFrontendId
+        const uniqueProblems = new Map<string, LeetCodeProblem>();
+        data.problemsetQuestionList.forEach(problem => {
+            uniqueProblems.set(problem.questionFrontendId, problem);
+        });
+        const deduplicatedProblems = Array.from(uniqueProblems.values());
 
-        // Cache the raw data
-        setCachedData(cacheKey, problems);
+        // Cache the deduplicated data for 2 hours
+        setCachedData(cacheKey, deduplicatedProblems);
+        console.log(`✅ Cached ${deduplicatedProblems.length} unique problems for 2 hours`);
 
-        // Filter by difficulty if provided
-        if (difficulty) {
-            problems = problems.filter((p) => p.difficulty === difficulty);
-        }
-
-        // Filter by topic if provided
-        if (topic) {
-            const normalizedTopic = topic.toLowerCase().replace(/\s+/g, "-");
-            problems = problems.filter((p) =>
-                p.topicTags.some(
-                    (tag) =>
-                        tag.slug === normalizedTopic ||
-                        tag.name.toLowerCase() === topic.toLowerCase() ||
-                        tag.slug.toLowerCase().includes(normalizedTopic) ||
-                        normalizedTopic.includes(tag.slug.toLowerCase())
-                )
-            );
-        }
-
-        return problems;
+        return applyFiltersAndDeduplicate(deduplicatedProblems, difficulty, topic);
     } catch (error) {
         console.error("Error fetching filtered problems:", error);
-        if (error instanceof Error) {
-            if (error.name === "AbortError") {
-                throw new Error(
-                    "Request timeout - LeetCode API is taking too long to respond"
-                );
-            }
-            throw error;
-        }
-        throw new Error("Unknown error occurred while fetching problems");
+        throw error;
     }
 }
 
@@ -265,41 +299,41 @@ export async function fetchFilteredProblems(
 export async function getTopicTags(): Promise<
     Array<{ name: string; slug: string; count: number }>
 > {
-    const cacheKey = "leetcode_topic_tags";
+    const cacheKey = `leetcode_topic_tags_${CACHE_VERSION}`;
 
-    // Try to get from cache first
-    const cachedTags =
-        getCachedData<Array<{ name: string; slug: string; count: number }>>(
-            cacheKey
-        );
+    // Try cache first
+    const cachedTags = getCachedData<Array<{ name: string; slug: string; count: number }>>(cacheKey);
     if (cachedTags) {
-        console.log("Using cached topic tags");
+        console.log("✅ Using cached topic tags (valid for 2 hours)");
         return cachedTags;
     }
 
+    // No cache, fetch from API
     try {
-        // Fetch with timeout to prevent hanging
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
-        const response = await fetch(
-            `${API_BASE_URL}/problems?limit=200&skip=0`,
-            { signal: controller.signal }
+        console.log("📡 Fetching topic tags from API...");
+        const response = await fetchWithRetry(
+            `${API_BASE_URL}/problems?limit=200&skip=0`
         );
-
-        clearTimeout(timeoutId);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch: ${response.statusText}`);
         }
 
         const data: LeetCodeProblemsResponse = await response.json();
+
+        // Deduplicate problems first by questionFrontendId
+        const uniqueProblems = new Map<string, LeetCodeProblem>();
+        data.problemsetQuestionList.forEach(problem => {
+            uniqueProblems.set(problem.questionFrontendId, problem);
+        });
+        const deduplicatedProblems = Array.from(uniqueProblems.values());
+
         const tagMap = new Map<
             string,
             { name: string; slug: string; count: number }
         >();
 
-        data.problemsetQuestionList.forEach((problem) => {
+        deduplicatedProblems.forEach((problem) => {
             problem.topicTags.forEach((tag) => {
                 if (tagMap.has(tag.slug)) {
                     const existing = tagMap.get(tag.slug)!;
@@ -318,42 +352,17 @@ export async function getTopicTags(): Promise<
             (a, b) => b.count - a.count
         );
 
-        // Cache the result
+        // Cache for 2 hours
         setCachedData(cacheKey, tags);
+        console.log("✅ Topic tags cached for 2 hours");
 
         return tags;
     } catch (error) {
         console.error("Error fetching topic tags:", error);
-        // Return fallback topics if API fails
-        return [
-            { name: "Array", slug: "array", count: 50 },
-            { name: "String", slug: "string", count: 45 },
-            { name: "Hash Table", slug: "hash-table", count: 40 },
-            {
-                name: "Dynamic Programming",
-                slug: "dynamic-programming",
-                count: 35,
-            },
-            { name: "Math", slug: "math", count: 30 },
-            { name: "Sorting", slug: "sorting", count: 28 },
-            { name: "Greedy", slug: "greedy", count: 25 },
-            { name: "Binary Search", slug: "binary-search", count: 22 },
-            { name: "Tree", slug: "tree", count: 20 },
-            { name: "Graph", slug: "graph", count: 18 },
-            { name: "Stack", slug: "stack", count: 16 },
-            { name: "Linked List", slug: "linked-list", count: 15 },
-            { name: "Database", slug: "database", count: 12 },
-            { name: "Binary Tree", slug: "binary-tree", count: 10 },
-            {
-                name: "Depth-First Search",
-                slug: "depth-first-search",
-                count: 10,
-            },
-            {
-                name: "Breadth-First Search",
-                slug: "breadth-first-search",
-                count: 10,
-            },
-        ];
+
+        // Import and return fallback topics
+        const { FALLBACK_TOPICS } = await import('./fallbackData');
+        console.log("Using fallback topic data");
+        return FALLBACK_TOPICS;
     }
 }

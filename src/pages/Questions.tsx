@@ -48,7 +48,6 @@ const Questions = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [selectedDifficulty, setSelectedDifficulty] = useState<
         "Easy" | "Medium" | "Hard" | null
     >(null);
@@ -66,7 +65,6 @@ const Questions = () => {
         const loadQuestions = async () => {
             try {
                 setLoading(true);
-                setError(null);
                 const problems = await fetchFilteredProblems(
                     500,
                     0,
@@ -79,12 +77,11 @@ const Questions = () => {
                 // Reset to page 1 when filters change
                 setCurrentPage(1);
             } catch (err) {
-                const errorMessage =
-                    err instanceof Error
-                        ? err.message
-                        : "Failed to load questions. Please try again later.";
-                setError(errorMessage);
                 console.error("Error loading questions:", err);
+                // Don't show error to user - cache handles everything
+                setAllQuestions([]);
+                setTotalQuestions(0);
+                setTotalPages(0);
             } finally {
                 setLoading(false);
             }
@@ -102,7 +99,9 @@ const Questions = () => {
 
     // Navigate to code platform with question slug in URL
     const handleQuestionClick = (question: LeetCodeProblem) => {
-        navigate(`/code?question=${question.titleSlug}`);
+        // Remove trailing numbers from slug (e.g., "two-sum-1" -> "two-sum")
+        const cleanSlug = question.titleSlug.replace(/-\d+$/, '');
+        navigate(`/code?question=${cleanSlug}`);
     };
 
     const handlePageChange = (page: number) => {
@@ -242,14 +241,6 @@ const Questions = () => {
                             )}
                         </div>
                     </div>
-
-                    {error && (
-                        <div className="rounded-lg border border-red-500 bg-red-50 dark:bg-red-950 p-4">
-                            <p className="text-red-800 dark:text-red-200">
-                                {error}
-                            </p>
-                        </div>
-                    )}
 
                     {loading ? (
                         <div className="rounded-lg border border-border bg-card">

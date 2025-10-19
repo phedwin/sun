@@ -27,6 +27,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./contexts/AuthContext";
+import { SocketProvider } from "./contexts/SocketContext";
 import Landing from "./pages/Landing";
 import Questions from "./pages/Questions";
 import CodePlatform from "./pages/CodePlatform";
@@ -35,41 +36,42 @@ import Index from "./pages/Index";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Curriculum from "./pages/Curriculum";
-import { seedCacheWithMockData } from "./lib/seedCache";
-
+import CollabRoom from "./pages/CollabRoom";
+import ServerHub from "./pages/ServerHub";
 const queryClient = new QueryClient();
 
-if (!localStorage.getItem("leetcode_problems_500_0")) {
-    console.log("No cache found, seeding with mock data...");
-    seedCacheWithMockData();
-}
-
-const App = () => (
-    <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            <AuthProvider>
-                <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                        <Routes>
-                            <Route path="/" element={<Landing />} />
-                            <Route path="/questions" element={<Questions />} />
-                            <Route path="/code" element={<CodePlatform />} />
-                            <Route path="/learn" element={<PythonTracks />} />
-                            <Route
-                                path="/curriculum"
-                                element={<Curriculum />}
-                            />
-                            <Route path="/playground" element={<Index />} />
-                            <Route path="/profile" element={<Profile />} />
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
-                    </BrowserRouter>
-                </TooltipProvider>
-            </AuthProvider>
-        </ThemeProvider>
-    </QueryClientProvider>
-);
+const App = () => {
+    return (
+        <QueryClientProvider client={queryClient}>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+                <SocketProvider>
+                    <AuthProvider>
+                        <TooltipProvider>
+                            <Toaster />
+                            <Sonner />
+                            <BrowserRouter>
+                                <Routes>
+                                    <Route path="/" element={<Landing />} />
+                                    <Route path="/questions" element={<Questions />} />
+                                    <Route path="/code" element={<CodePlatform />} />
+                                    <Route path="/learn" element={<PythonTracks />} />
+                                    <Route
+                                        path="/curriculum"
+                                        element={<Curriculum />}
+                                    />
+                                    <Route path="/playground" element={<Index />} />
+                                    <Route path="/profile" element={<Profile />} />
+                                    <Route path="/server-hub" element={<ServerHub />} />
+                                    <Route path="/collab/:roomCode" element={<CollabRoom />} />
+                                    <Route path="*" element={<NotFound />} />
+                                </Routes>
+                            </BrowserRouter>
+                        </TooltipProvider>
+                    </AuthProvider>
+                </SocketProvider>
+            </ThemeProvider>
+        </QueryClientProvider>
+    );
+};
 
 export default App;

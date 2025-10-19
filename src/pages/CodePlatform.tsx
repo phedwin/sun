@@ -21,50 +21,123 @@ THE SOFTWARE.
 */
 
 import { useState, useEffect } from "react";
-import {
-    ResizablePanel,
-    ResizablePanelGroup,
-    ResizableHandle,
-} from "@/components/ui/resizable";
+import { useSearchParams } from "react-router-dom";
+import { Header } from "@/components/Header";
 import { CodeEditor } from "@/components/CodeEditor";
 import { QuestionPanel } from "@/components/QuestionPanel";
-import { Header } from "@/components/Header";
+import { fetchProblemDetail, LeetCodeProblemDetail } from "@/lib/leetcodeApi";
+import { generateCodeSkeleton } from "@/lib/codeSkeletonGenerator";
+import { Loader2, AlertCircle } from "lucide-react";
 
 const CodePlatform = () => {
-    const [mounted, setMounted] = useState(false);
+    const [searchParams] = useSearchParams();
+    const questionSlug = searchParams.get("question");
 
+    const [problem, setProblem] = useState<LeetCodeProblemDetail | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [initialCode, setInitialCode] = useState<{ [key: string]: string }>({});
+
+    // Fetch problem details when question slug changes
     useEffect(() => {
-        setMounted(true);
-    }, []);
+        const loadProblem = async () => {
+            if (!questionSlug) {
+                setError("No question specified");
+                setLoading(false);
+                return;
+            }
 
-    if (!mounted) {
-        return null;
-    }
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Fetch from API (which handles caching internally)
+                const problemData = await fetchProblemDetail(questionSlug);
+                setProblem(problemData);
+
+                // Generate code skeletons
+                const skeletons = {
+                    javascript: generateCodeSkeleton({
+                        slug: questionSlug,
+                        language: 'javascript'
+                    }),
+                    python: generateCodeSkeleton({
+                        slug: questionSlug,
+                        language: 'python'
+                    }),
+                    java: generateCodeSkeleton({
+                        slug: questionSlug,
+                        language: 'java'
+                    }),
+                    cpp: generateCodeSkeleton({
+                        slug: questionSlug,
+                        language: 'cpp'
+                    })
+                };
+
+                setInitialCode(skeletons);
+                setLoading(false);
+            } catch (err) {
+                console.error("Error loading problem:", err);
+                const errorMessage = err instanceof Error ? err.message : "Failed to load problem";
+
+                // Show friendly error messages
+                if (errorMessage.includes("rate limit") || errorMessage.includes("429") || errorMessage.includes("no cache available")) {
+                    setError("🌴 Slow down, champ! The API needs a break. Try refreshing the page or come back in a few minutes.");
+                } else if (errorMessage.includes("timeout")) {
+                    setError("⏰ Taking too long! The API is being slow. Try again in a moment.");
+                } else {
+                    setError(`Oops! ${errorMessage}`);
+                }
+                setLoading(false);
+            }
+        };
+
+        loadProblem();
+    }, [questionSlug]);
 
     return (
         <div className="h-screen flex flex-col bg-background">
             <Header />
 
-            <div className="flex-1 p-4">
-                <ResizablePanelGroup
-                    direction="horizontal"
-                    className="rounded-lg border border-border"
-                >
-                    <ResizablePanel
-                        defaultSize={60}
-                        minSize={40}
-                        className="relative"
-                    >
-                        <CodeEditor />
-                    </ResizablePanel>
+            {loading ? (
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center space-y-4">
+                        <Loader2 className="h-12 w-12 animate-spin mx-auto text-[hsl(var(--sunset-orange))]" />
+                        <p className="text-lg font-semibold">Loading problem...</p>
+                    </div>
+                </div>
+            ) : error ? (
+                <div className="flex-1 flex items-center justify-center p-8">
+                    <div className="max-w-md rounded-xl border-4 border-[hsl(var(--sunset-orange))] bg-gradient-to-r from-[hsl(var(--sunset-orange))]/10 to-[hsl(var(--savanna-gold))]/10 p-8">
+                        <div className="flex items-start gap-4">
+                            <AlertCircle className="h-12 w-12 text-[hsl(var(--sunset-orange))] flex-shrink-0" />
+                            <div>
+                                <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
+                                    Oops!
+                                </h3>
+                                <p className="text-base">{error}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="flex-1 flex overflow-hidden">
+                    {/* Left side - Question (scrollable) */}
+                    <div className="w-1/2 overflow-y-auto border-r border-border">
+                        <QuestionPanel problem={problem} />
+                    </div>
 
-                    <ResizableHandle className="w-2 bg-border hover:bg-border-hover transition-colors" />
-
-                    <ResizablePanel defaultSize={40} minSize={25}>
-                        <QuestionPanel />
-                    </ResizablePanel>
-                </ResizablePanelGroup>
-            </div>
+                    {/* Right side - Editor (sticky) */}
+                    <div className="w-1/2 flex flex-col">
+                        <CodeEditor
+                            initialCode={initialCode}
+                            problemSlug={questionSlug || undefined}
+                            problemTitle={problem?.questionTitle}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
