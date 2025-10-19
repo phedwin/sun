@@ -17,5 +17,5 @@ jobs:
             - name: Install dependencies
               run: make
 
-            - name: Format code
-              run: make format
+            # - name: Format code
+              # run: make format
