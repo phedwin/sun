@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 
 // Generate random 6-character room code
 function generateRoomCode(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let code = "";
     for (let i = 0; i < 6; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -24,8 +24,8 @@ router.get("/", async (req, res) => {
                     select: {
                         id: true,
                         name: true,
-                        avatar: true
-                    }
+                        avatar: true,
+                    },
                 },
                 members: {
                     where: { isOnline: true },
@@ -33,21 +33,21 @@ router.get("/", async (req, res) => {
                         id: true,
                         userId: true,
                         isOnline: true,
-                        color: true
-                    }
+                        color: true,
+                    },
                 },
                 _count: {
                     select: {
-                        members: true
-                    }
-                }
+                        members: true,
+                    },
+                },
             },
             orderBy: {
-                createdAt: 'desc'
-            }
+                createdAt: "desc",
+            },
         });
 
-        const roomsWithStats = rooms.map(room => ({
+        const roomsWithStats = rooms.map((room) => ({
             id: room.id,
             name: room.name,
             description: room.description,
@@ -56,7 +56,7 @@ router.get("/", async (req, res) => {
             currentProblem: room.currentProblem,
             totalMembers: room._count.members,
             onlineMembers: room.members.length,
-            createdAt: room.createdAt
+            createdAt: room.createdAt,
         }));
 
         res.json(roomsWithStats);
@@ -78,8 +78,8 @@ router.get("/:code", async (req, res) => {
                     select: {
                         id: true,
                         name: true,
-                        avatar: true
-                    }
+                        avatar: true,
+                    },
                 },
                 members: {
                     include: {
@@ -87,18 +87,18 @@ router.get("/:code", async (req, res) => {
                             select: {
                                 id: true,
                                 name: true,
-                                avatar: true
-                            }
-                        }
-                    }
+                                avatar: true,
+                            },
+                        },
+                    },
                 },
                 messages: {
                     orderBy: {
-                        createdAt: 'desc'
+                        createdAt: "desc",
                     },
-                    take: 50
-                }
-            }
+                    take: 50,
+                },
+            },
         });
 
         if (!room) {
@@ -115,10 +115,18 @@ router.get("/:code", async (req, res) => {
 // Create a new room
 router.post("/create", async (req, res) => {
     try {
-        const { name, description, username, isPublic = true, maxMembers = 10 } = req.body;
+        const {
+            name,
+            description,
+            username,
+            isPublic = true,
+            maxMembers = 10,
+        } = req.body;
 
         if (!name || !username) {
-            return res.status(400).json({ error: "Name and username are required" });
+            return res
+                .status(400)
+                .json({ error: "Name and username are required" });
         }
 
         // Generate unique room code
@@ -132,18 +140,18 @@ router.post("/create", async (req, res) => {
 
         // Create or find user
         let user = await prisma.user.findFirst({
-            where: { name: username }
+            where: { name: username },
         });
 
         if (!user) {
             // Create temporary user
             user = await prisma.user.create({
                 data: {
-                    email: `${username.toLowerCase().replace(/\s+/g, '')}@temp.com`,
+                    email: `${username.toLowerCase().replace(/\s+/g, "")}@temp.com`,
                     name: username,
                     provider: "temp",
-                    providerId: `temp_${Date.now()}_${Math.random()}`
-                }
+                    providerId: `temp_${Date.now()}_${Math.random()}`,
+                },
             });
         }
 
@@ -155,21 +163,30 @@ router.post("/create", async (req, res) => {
                 code,
                 creatorId: user.id,
                 isPublic,
-                maxMembers
+                maxMembers,
             },
             include: {
                 creator: {
                     select: {
                         id: true,
                         name: true,
-                        avatar: true
-                    }
-                }
-            }
+                        avatar: true,
+                    },
+                },
+            },
         });
 
         // Add creator as first member
-        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+        const colors = [
+            "#FF6B6B",
+            "#4ECDC4",
+            "#45B7D1",
+            "#FFA07A",
+            "#98D8C8",
+            "#F7DC6F",
+            "#BB8FCE",
+            "#85C1E2",
+        ];
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
         await prisma.roomMember.create({
@@ -178,8 +195,8 @@ router.post("/create", async (req, res) => {
                 userId: user.id,
                 role: "owner",
                 isOnline: true,
-                color: randomColor
-            }
+                color: randomColor,
+            },
         });
 
         res.json({
@@ -187,8 +204,8 @@ router.post("/create", async (req, res) => {
             user: {
                 id: user.id,
                 name: user.name,
-                avatar: user.avatar
-            }
+                avatar: user.avatar,
+            },
         });
     } catch (error) {
         console.error("Error creating room:", error);
@@ -202,7 +219,9 @@ router.post("/join", async (req, res) => {
         const { code, username } = req.body;
 
         if (!code || !username) {
-            return res.status(400).json({ error: "Room code and username are required" });
+            return res
+                .status(400)
+                .json({ error: "Room code and username are required" });
         }
 
         // Find room
@@ -210,9 +229,9 @@ router.post("/join", async (req, res) => {
             where: { code },
             include: {
                 _count: {
-                    select: { members: true }
-                }
-            }
+                    select: { members: true },
+                },
+            },
         });
 
         if (!room) {
@@ -226,17 +245,17 @@ router.post("/join", async (req, res) => {
 
         // Create or find user
         let user = await prisma.user.findFirst({
-            where: { name: username }
+            where: { name: username },
         });
 
         if (!user) {
             user = await prisma.user.create({
                 data: {
-                    email: `${username.toLowerCase().replace(/\s+/g, '')}@temp.com`,
+                    email: `${username.toLowerCase().replace(/\s+/g, "")}@temp.com`,
                     name: username,
                     provider: "temp",
-                    providerId: `temp_${Date.now()}_${Math.random()}`
-                }
+                    providerId: `temp_${Date.now()}_${Math.random()}`,
+                },
             });
         }
 
@@ -245,21 +264,31 @@ router.post("/join", async (req, res) => {
             where: {
                 roomId_userId: {
                     roomId: room.id,
-                    userId: user.id
-                }
-            }
+                    userId: user.id,
+                },
+            },
         });
 
         if (existingMember) {
             // Update to online
             await prisma.roomMember.update({
                 where: { id: existingMember.id },
-                data: { isOnline: true, lastSeenAt: new Date() }
+                data: { isOnline: true, lastSeenAt: new Date() },
             });
         } else {
             // Add as new member
-            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const colors = [
+                "#FF6B6B",
+                "#4ECDC4",
+                "#45B7D1",
+                "#FFA07A",
+                "#98D8C8",
+                "#F7DC6F",
+                "#BB8FCE",
+                "#85C1E2",
+            ];
+            const randomColor =
+                colors[Math.floor(Math.random() * colors.length)];
 
             await prisma.roomMember.create({
                 data: {
@@ -267,8 +296,8 @@ router.post("/join", async (req, res) => {
                     userId: user.id,
                     role: "member",
                     isOnline: true,
-                    color: randomColor
-                }
+                    color: randomColor,
+                },
             });
         }
 
@@ -277,8 +306,8 @@ router.post("/join", async (req, res) => {
             user: {
                 id: user.id,
                 name: user.name,
-                avatar: user.avatar
-            }
+                avatar: user.avatar,
+            },
         });
     } catch (error) {
         console.error("Error joining room:", error);

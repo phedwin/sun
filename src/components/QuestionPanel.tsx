@@ -57,8 +57,12 @@ export const QuestionPanel = ({ problem }: QuestionPanelProps) => {
             <div className="h-full flex items-center justify-center p-8">
                 <div className="text-center space-y-4">
                     <BookOpen className="h-16 w-16 mx-auto text-muted-foreground opacity-50" />
-                    <p className="text-lg font-semibold text-muted-foreground">No problem selected</p>
-                    <p className="text-sm text-muted-foreground">Choose a problem from the questions page!</p>
+                    <p className="text-lg font-semibold text-muted-foreground">
+                        No problem selected
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        Choose a problem from the questions page!
+                    </p>
                 </div>
             </div>
         );
@@ -72,7 +76,9 @@ export const QuestionPanel = ({ problem }: QuestionPanelProps) => {
                     <h1 className="text-3xl font-bold flex-1">
                         {problem.questionFrontendId}. {problem.questionTitle}
                     </h1>
-                    <Badge className={`${getDifficultyColor(problem.difficulty)} px-4 py-1 text-base`}>
+                    <Badge
+                        className={`${getDifficultyColor(problem.difficulty)} px-4 py-1 text-base`}
+                    >
                         {problem.difficulty}
                     </Badge>
                 </div>
@@ -120,13 +126,20 @@ export const QuestionPanel = ({ problem }: QuestionPanelProps) => {
                         >
                             <span className="flex items-center gap-2">
                                 💡 Show Hints ({problem.hints.length})
-                                {showHint ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                {showHint ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
                             </span>
                         </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="mt-4 space-y-3">
                         {problem.hints.map((hint, i) => (
-                            <Card key={i} className="border-2 border-[hsl(var(--savanna-gold))]">
+                            <Card
+                                key={i}
+                                className="border-2 border-[hsl(var(--savanna-gold))]"
+                            >
                                 <CardContent className="p-4">
                                     <div className="flex gap-3">
                                         <span className="font-bold text-[hsl(var(--savanna-gold))] flex-shrink-0">

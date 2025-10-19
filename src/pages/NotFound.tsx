@@ -50,20 +50,32 @@ const NotFound = () => {
                 {/* African-themed Message */}
                 <div className="space-y-4">
                     <p className="text-xl text-muted-foreground leading-relaxed">
-                        Uh oh! This path has wandered too far from the village. 🛖
+                        Uh oh! This path has wandered too far from the village.
+                        🛖
                     </p>
                     <p className="text-lg text-muted-foreground">
-                        Even the wise elephants can't find this page. Let's get you back on track!
+                        Even the wise elephants can't find this page. Let's get
+                        you back on track!
                     </p>
                 </div>
 
                 {/* African Scenery */}
                 <div className="flex justify-center items-center gap-4 text-6xl my-8">
-                    <span className="animate-[float_2s_ease-in-out_infinite]">🌴</span>
-                    <span className="animate-[float_2.5s_ease-in-out_infinite]">🦁</span>
-                    <span className="animate-[float_3s_ease-in-out_infinite]">🦒</span>
-                    <span className="animate-[float_2.2s_ease-in-out_infinite]">🐘</span>
-                    <span className="animate-[float_2.8s_ease-in-out_infinite]">🦓</span>
+                    <span className="animate-[float_2s_ease-in-out_infinite]">
+                        🌴
+                    </span>
+                    <span className="animate-[float_2.5s_ease-in-out_infinite]">
+                        🦁
+                    </span>
+                    <span className="animate-[float_3s_ease-in-out_infinite]">
+                        🦒
+                    </span>
+                    <span className="animate-[float_2.2s_ease-in-out_infinite]">
+                        🐘
+                    </span>
+                    <span className="animate-[float_2.8s_ease-in-out_infinite]">
+                        🦓
+                    </span>
                 </div>
 
                 {/* Navigation Buttons */}
@@ -101,7 +113,8 @@ const NotFound = () => {
                 {/* Fun Footer Message */}
                 <div className="pt-12">
                     <p className="text-sm text-muted-foreground italic">
-                        "Not all who wander are lost... but this page definitely is!" 🗺️
+                        "Not all who wander are lost... but this page definitely
+                        is!" 🗺️
                     </p>
                 </div>
             </div>

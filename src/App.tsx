@@ -52,17 +52,38 @@ const App = () => {
                             <BrowserRouter>
                                 <Routes>
                                     <Route path="/" element={<Landing />} />
-                                    <Route path="/questions" element={<Questions />} />
-                                    <Route path="/code" element={<CodePlatform />} />
-                                    <Route path="/learn" element={<PythonTracks />} />
+                                    <Route
+                                        path="/questions"
+                                        element={<Questions />}
+                                    />
+                                    <Route
+                                        path="/code"
+                                        element={<CodePlatform />}
+                                    />
+                                    <Route
+                                        path="/learn"
+                                        element={<PythonTracks />}
+                                    />
                                     <Route
                                         path="/curriculum"
                                         element={<Curriculum />}
                                     />
-                                    <Route path="/playground" element={<Index />} />
-                                    <Route path="/profile" element={<Profile />} />
-                                    <Route path="/server-hub" element={<ServerHub />} />
-                                    <Route path="/collab/:roomCode" element={<CollabRoom />} />
+                                    <Route
+                                        path="/playground"
+                                        element={<Index />}
+                                    />
+                                    <Route
+                                        path="/profile"
+                                        element={<Profile />}
+                                    />
+                                    <Route
+                                        path="/server-hub"
+                                        element={<ServerHub />}
+                                    />
+                                    <Route
+                                        path="/collab/:roomCode"
+                                        element={<CollabRoom />}
+                                    />
                                     <Route path="*" element={<NotFound />} />
                                 </Routes>
                             </BrowserRouter>

@@ -159,32 +159,64 @@ const Landing = () => {
                     {/* Floating Icons - Subtle & Beautiful */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                         {/* Top Left - Python */}
-                        <div className="absolute top-20 left-[10%] opacity-60" style={{ animation: 'float 6s ease-in-out infinite' }}>
+                        <div
+                            className="absolute top-20 left-[10%] opacity-60"
+                            style={{
+                                animation: "float 6s ease-in-out infinite",
+                            }}
+                        >
                             <div className="text-6xl">🐍</div>
                         </div>
 
                         {/* Top Right - Code */}
-                        <div className="absolute top-32 right-[15%] opacity-60" style={{ animation: 'float 7s ease-in-out infinite 1s' }}>
+                        <div
+                            className="absolute top-32 right-[15%] opacity-60"
+                            style={{
+                                animation: "float 7s ease-in-out infinite 1s",
+                            }}
+                        >
                             <div className="text-5xl">💻</div>
                         </div>
 
                         {/* Middle Left - Brain */}
-                        <div className="absolute top-1/2 left-[8%] opacity-60" style={{ animation: 'float 8s ease-in-out infinite 2s' }}>
+                        <div
+                            className="absolute top-1/2 left-[8%] opacity-60"
+                            style={{
+                                animation: "float 8s ease-in-out infinite 2s",
+                            }}
+                        >
                             <div className="text-5xl">🧠</div>
                         </div>
 
                         {/* Middle Right - Rocket */}
-                        <div className="absolute top-1/2 right-[10%] opacity-60" style={{ animation: 'float 6.5s ease-in-out infinite 1.5s' }}>
+                        <div
+                            className="absolute top-1/2 right-[10%] opacity-60"
+                            style={{
+                                animation:
+                                    "float 6.5s ease-in-out infinite 1.5s",
+                            }}
+                        >
                             <div className="text-6xl">🚀</div>
                         </div>
 
                         {/* Bottom Left - Book */}
-                        <div className="absolute bottom-32 left-[12%] opacity-60" style={{ animation: 'float 7.5s ease-in-out infinite 0.5s' }}>
+                        <div
+                            className="absolute bottom-32 left-[12%] opacity-60"
+                            style={{
+                                animation:
+                                    "float 7.5s ease-in-out infinite 0.5s",
+                            }}
+                        >
                             <div className="text-5xl">📚</div>
                         </div>
 
                         {/* Bottom Right - Trophy */}
-                        <div className="absolute bottom-24 right-[12%] opacity-60" style={{ animation: 'float 6s ease-in-out infinite 2.5s' }}>
+                        <div
+                            className="absolute bottom-24 right-[12%] opacity-60"
+                            style={{
+                                animation: "float 6s ease-in-out infinite 2.5s",
+                            }}
+                        >
                             <div className="text-5xl">🏆</div>
                         </div>
 
@@ -200,7 +232,10 @@ const Landing = () => {
 
                         {/* Main Heading */}
                         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight">
-                            Welcome to <span className="bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">SUN</span>
+                            Welcome to{" "}
+                            <span className="bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
+                                SUN
+                            </span>
                         </h1>
 
                         {/* Subheading */}
@@ -236,28 +271,35 @@ const Landing = () => {
                         <div className="flex items-center justify-center gap-12 pt-8 text-sm">
                             <div className="text-center">
                                 <div className="text-3xl font-bold bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
-                                    {topics.reduce((sum, t) => sum + t.count, 0)}
+                                    {topics.reduce(
+                                        (sum, t) => sum + t.count,
+                                        0
+                                    )}
                                 </div>
-                                <div className="text-muted-foreground mt-1">Problems</div>
+                                <div className="text-muted-foreground mt-1">
+                                    Problems
+                                </div>
                             </div>
                             <div className="w-px h-12 bg-border"></div>
                             <div className="text-center">
                                 <div className="text-3xl font-bold bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
                                     {topics.length}
                                 </div>
-                                <div className="text-muted-foreground mt-1">Topics</div>
+                                <div className="text-muted-foreground mt-1">
+                                    Topics
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                    {error && (
-                        <div className="rounded-lg border border-red-500 bg-red-50 dark:bg-red-950 p-4">
-                            <p className="text-red-800 dark:text-red-200">
-                                {error}
-                            </p>
-                        </div>
-                    )}
+                {error && (
+                    <div className="rounded-lg border border-red-500 bg-red-50 dark:bg-red-950 p-4">
+                        <p className="text-red-800 dark:text-red-200">
+                            {error}
+                        </p>
+                    </div>
+                )}
 
                 {/* Topics Section - Clean Grid */}
                 <div className="py-20">
@@ -273,7 +315,10 @@ const Landing = () => {
                     {loading ? (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
                             {[...Array(15)].map((_, i) => (
-                                <div key={i} className="h-28 bg-muted/30 rounded-xl animate-pulse"></div>
+                                <div
+                                    key={i}
+                                    className="h-28 bg-muted/30 rounded-xl animate-pulse"
+                                ></div>
                             ))}
                         </div>
                     ) : (
@@ -287,7 +332,9 @@ const Landing = () => {
                                         style={{
                                             animation: `fadeIn 0.5s ease-out ${delay}s both`,
                                         }}
-                                        onClick={() => handleTopicClick(topic.slug)}
+                                        onClick={() =>
+                                            handleTopicClick(topic.slug)
+                                        }
                                     >
                                         <div className="relative bg-card border border-border rounded-xl p-4 hover:border-[hsl(var(--sunset-orange))]/50 hover:shadow-md transition-all duration-300 h-full flex flex-col items-center justify-center text-center space-y-2">
                                             {/* Icon */}
@@ -334,7 +381,9 @@ const Landing = () => {
                                 <div className="inline-block p-4 rounded-full bg-[hsl(var(--sunset-orange))]/10 group-hover:bg-[hsl(var(--sunset-orange))]/20 transition-all">
                                     <Code2 className="h-10 w-10 text-[hsl(var(--sunset-orange))] group-hover:scale-110 transition-transform" />
                                 </div>
-                                <h3 className="font-bold text-xl">Real Problems</h3>
+                                <h3 className="font-bold text-xl">
+                                    Real Problems
+                                </h3>
                                 <p className="text-sm text-muted-foreground leading-relaxed">
                                     Practice with LeetCode's extensive library
                                 </p>
@@ -347,7 +396,9 @@ const Landing = () => {
                                 <div className="inline-block p-4 rounded-full bg-[hsl(var(--savanna-gold))]/10 group-hover:bg-[hsl(var(--savanna-gold))]/20 transition-all">
                                     <Zap className="h-10 w-10 text-[hsl(var(--savanna-gold))] group-hover:scale-110 transition-transform" />
                                 </div>
-                                <h3 className="font-bold text-xl">Guided Journey</h3>
+                                <h3 className="font-bold text-xl">
+                                    Guided Journey
+                                </h3>
                                 <p className="text-sm text-muted-foreground leading-relaxed">
                                     Follow a roadmap and collect beads
                                 </p>
@@ -360,7 +411,9 @@ const Landing = () => {
                                 <div className="inline-block p-4 rounded-full bg-[hsl(var(--sunset-pink))]/10 group-hover:bg-[hsl(var(--sunset-pink))]/20 transition-all">
                                     <GitBranch className="h-10 w-10 text-[hsl(var(--sunset-pink))] group-hover:scale-110 transition-transform" />
                                 </div>
-                                <h3 className="font-bold text-xl">Track Progress</h3>
+                                <h3 className="font-bold text-xl">
+                                    Track Progress
+                                </h3>
                                 <p className="text-sm text-muted-foreground leading-relaxed">
                                     Watch your growth and climb the board
                                 </p>

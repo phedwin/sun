@@ -5,23 +5,27 @@
 
 // Convert slug to camelCase function name
 export function slugToFunctionName(slug: string): string {
-    const words = slug.split('-');
-    return words[0] + words.slice(1).map(word =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-    ).join('');
+    const words = slug.split("-");
+    return (
+        words[0] +
+        words
+            .slice(1)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join("")
+    );
 }
 
 // Convert slug to PascalCase class name
 export function slugToClassName(slug: string): string {
-    const words = slug.split('-');
-    return words.map(word =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-    ).join('');
+    const words = slug.split("-");
+    return words
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("");
 }
 
 // Convert slug to snake_case for Python
 export function slugToSnakeCase(slug: string): string {
-    return slug.replace(/-/g, '_');
+    return slug.replace(/-/g, "_");
 }
 
 export interface CodeSkeletonOptions {
@@ -29,7 +33,10 @@ export interface CodeSkeletonOptions {
     language: string;
 }
 
-export function generateCodeSkeleton({ slug, language }: CodeSkeletonOptions): string {
+export function generateCodeSkeleton({
+    slug,
+    language,
+}: CodeSkeletonOptions): string {
     const functionName = slugToFunctionName(slug);
     const className = slugToClassName(slug);
     const snakeName = slugToSnakeCase(slug);
@@ -92,7 +99,7 @@ int main() {
     Solution solution;
     solution.${functionName}();
     return 0;
-}`
+}`,
     };
 
     return skeletons[language] || skeletons.javascript;
@@ -108,7 +115,7 @@ export function generateCodeSkeletonWithParams({
     slug,
     language,
     params = [],
-    returnType = 'any'
+    returnType = "any",
 }: {
     slug: string;
     language: string;
@@ -120,15 +127,15 @@ export function generateCodeSkeletonWithParams({
     const snakeName = slugToSnakeCase(slug);
 
     // Format parameters
-    const jsParams = params.map(p => p.name).join(', ');
-    const pyParams = params.map(p => p.name).join(', ');
-    const javaParams = params.map(p => `${p.type} ${p.name}`).join(', ');
-    const cppParams = params.map(p => `${p.type} ${p.name}`).join(', ');
+    const jsParams = params.map((p) => p.name).join(", ");
+    const pyParams = params.map((p) => p.name).join(", ");
+    const javaParams = params.map((p) => `${p.type} ${p.name}`).join(", ");
+    const cppParams = params.map((p) => `${p.type} ${p.name}`).join(", ");
 
     const skeletons: { [key: string]: string } = {
         javascript: `/**
- * Problem: ${slug.split('-').join(' ')}
- * @param {${params.map(p => `${p.type} ${p.name}`).join(', ')}}
+ * Problem: ${slug.split("-").join(" ")}
+ * @param {${params.map((p) => `${p.type} ${p.name}`).join(", ")}}
  * @return {${returnType}}
  */
 function ${functionName}(${jsParams}) {
@@ -148,7 +155,7 @@ testCases.forEach((testCase, index) => {
 });`,
 
         python: `"""
-Problem: ${slug.split('-').join(' ')}
+Problem: ${slug.split("-").join(" ")}
 """
 
 def ${snakeName}(${pyParams}):
@@ -156,7 +163,7 @@ def ${snakeName}(${pyParams}):
     Write your solution here
 
     Args:
-        ${params.map(p => `${p.name} (${p.type}): Description`).join('\n        ')}
+        ${params.map((p) => `${p.name} (${p.type}): Description`).join("\n        ")}
 
     Returns:
         ${returnType}: Description
@@ -174,7 +181,7 @@ if __name__ == "__main__":
         print(f"Test {i + 1}: {result}")`,
 
         java: `/**
- * Problem: ${slug.split('-').join(' ')}
+ * Problem: ${slug.split("-").join(" ")}
  */
 public class Solution {
     public ${returnType} ${functionName}(${javaParams}) {
@@ -197,7 +204,7 @@ public class Solution {
 using namespace std;
 
 /**
- * Problem: ${slug.split('-').join(' ')}
+ * Problem: ${slug.split("-").join(" ")}
  */
 class Solution {
 public:
@@ -215,7 +222,7 @@ int main() {
 
     cout << "Tests completed" << endl;
     return 0;
-}`
+}`,
     };
 
     return skeletons[language] || skeletons.javascript;

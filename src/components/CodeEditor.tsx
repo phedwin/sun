@@ -52,7 +52,11 @@ interface CodeEditorProps {
     problemTitle?: string;
 }
 
-export const CodeEditor = ({ initialCode, problemSlug, problemTitle }: CodeEditorProps = {}) => {
+export const CodeEditor = ({
+    initialCode,
+    problemSlug,
+    problemTitle,
+}: CodeEditorProps = {}) => {
     const { theme: systemTheme } = useTheme();
     const [language, setLanguage] = useState("javascript");
     const [fontFamily, setFontFamily] = useState("Fira Code");

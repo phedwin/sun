@@ -36,7 +36,9 @@ const CodePlatform = () => {
     const [problem, setProblem] = useState<LeetCodeProblemDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [initialCode, setInitialCode] = useState<{ [key: string]: string }>({});
+    const [initialCode, setInitialCode] = useState<{ [key: string]: string }>(
+        {}
+    );
 
     // Fetch problem details when question slug changes
     useEffect(() => {
@@ -59,33 +61,44 @@ const CodePlatform = () => {
                 const skeletons = {
                     javascript: generateCodeSkeleton({
                         slug: questionSlug,
-                        language: 'javascript'
+                        language: "javascript",
                     }),
                     python: generateCodeSkeleton({
                         slug: questionSlug,
-                        language: 'python'
+                        language: "python",
                     }),
                     java: generateCodeSkeleton({
                         slug: questionSlug,
-                        language: 'java'
+                        language: "java",
                     }),
                     cpp: generateCodeSkeleton({
                         slug: questionSlug,
-                        language: 'cpp'
-                    })
+                        language: "cpp",
+                    }),
                 };
 
                 setInitialCode(skeletons);
                 setLoading(false);
             } catch (err) {
                 console.error("Error loading problem:", err);
-                const errorMessage = err instanceof Error ? err.message : "Failed to load problem";
+                const errorMessage =
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to load problem";
 
                 // Show friendly error messages
-                if (errorMessage.includes("rate limit") || errorMessage.includes("429") || errorMessage.includes("no cache available")) {
-                    setError("🌴 Slow down, champ! The API needs a break. Try refreshing the page or come back in a few minutes.");
+                if (
+                    errorMessage.includes("rate limit") ||
+                    errorMessage.includes("429") ||
+                    errorMessage.includes("no cache available")
+                ) {
+                    setError(
+                        "🌴 Slow down, champ! The API needs a break. Try refreshing the page or come back in a few minutes."
+                    );
                 } else if (errorMessage.includes("timeout")) {
-                    setError("⏰ Taking too long! The API is being slow. Try again in a moment.");
+                    setError(
+                        "⏰ Taking too long! The API is being slow. Try again in a moment."
+                    );
                 } else {
                     setError(`Oops! ${errorMessage}`);
                 }
@@ -104,7 +117,9 @@ const CodePlatform = () => {
                 <div className="flex-1 flex items-center justify-center">
                     <div className="text-center space-y-4">
                         <Loader2 className="h-12 w-12 animate-spin mx-auto text-[hsl(var(--sunset-orange))]" />
-                        <p className="text-lg font-semibold">Loading problem...</p>
+                        <p className="text-lg font-semibold">
+                            Loading problem...
+                        </p>
                     </div>
                 </div>
             ) : error ? (

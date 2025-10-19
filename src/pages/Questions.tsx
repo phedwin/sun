@@ -100,7 +100,7 @@ const Questions = () => {
     // Navigate to code platform with question slug in URL
     const handleQuestionClick = (question: LeetCodeProblem) => {
         // Remove trailing numbers from slug (e.g., "two-sum-1" -> "two-sum")
-        const cleanSlug = question.titleSlug.replace(/-\d+$/, '');
+        const cleanSlug = question.titleSlug.replace(/-\d+$/, "");
         navigate(`/code?question=${cleanSlug}`);
     };
 

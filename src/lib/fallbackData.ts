@@ -40,4 +40,5 @@ The LeetCode API is taking a quick rest. Don't worry - we've cached tons of prob
 **Pro Tip:** The more you use the app, the more data gets cached, and the less you'll see this message!
 `;
 
-export const RATE_LIMIT_TOAST_MESSAGE = "API taking a rest 🌴 Using cached data...";
+export const RATE_LIMIT_TOAST_MESSAGE =
+    "API taking a rest 🌴 Using cached data...";
