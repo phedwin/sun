@@ -22,7 +22,37 @@ THE SOFTWARE.
 
 const API_BASE_URL = "https://alfa-leetcode-api.onrender.com";
 
-const CACHE_DURATION = 60 * 60 * 1000;
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours - longer cache to avoid rate limits
+
+// Retry with exponential backoff
+async function fetchWithRetry(url: string, retries = 3, backoff = 1000): Promise<Response> {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            // If rate limited (429), wait and retry
+            if (response.status === 429) {
+                if (i < retries - 1) {
+                    const waitTime = backoff * Math.pow(2, i);
+                    console.log(`Rate limited. Waiting ${waitTime}ms before retry ${i + 1}/${retries}...`);
+                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                    continue;
+                }
+            }
+
+            return response;
+        } catch (error) {
+            if (i === retries - 1) throw error;
+            const waitTime = backoff * Math.pow(2, i);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+    }
+    throw new Error('Max retries reached');
+}
 
 interface CachedData<T> {
     data: T;
@@ -161,13 +191,15 @@ export async function fetchProblemDetail(
  * @param difficulty - Filter by difficulty (Easy, Medium, Hard)
  * @param topic - Filter by topic tag
  */
+import { CACHE_VERSION } from "./CONSTATS";
+
 export async function fetchFilteredProblems(
     limit: number = 500,
     skip: number = 0,
     difficulty?: "Easy" | "Medium" | "Hard",
     topic?: string
 ): Promise<LeetCodeProblem[]> {
-    const cacheKey = `leetcode_problems_${limit}_${skip}`;
+    const cacheKey = `leetcode_problems_${CACHE_VERSION}_${limit}_${skip}`;
 
     // Try to get from cache first
     const cachedProblems = getCachedData<LeetCodeProblem[]>(cacheKey);
@@ -193,22 +225,29 @@ export async function fetchFilteredProblems(
             );
         }
 
+        // Deduplicate by questionFrontendId (remove duplicate problems)
+        const uniqueProblems = new Map<string, LeetCodeProblem>();
+        problems.forEach(problem => {
+            uniqueProblems.set(problem.questionFrontendId, problem);
+        });
+        problems = Array.from(uniqueProblems.values());
+
         return problems;
     }
 
     try {
-        // Fetch a large set with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
-        const response = await fetch(
-            `${API_BASE_URL}/problems?limit=${limit}&skip=${skip}`,
-            { signal: controller.signal }
+        // Fetch with retry logic for rate limits
+        const response = await fetchWithRetry(
+            `${API_BASE_URL}/problems?limit=${limit}&skip=${skip}`
         );
 
-        clearTimeout(timeoutId);
-
         if (!response.ok) {
+            // If still failing after retries, throw descriptive error
+            if (response.status === 429) {
+                throw new Error(
+                    "LeetCode API rate limit exceeded. Using cached data if available. Please try again in a few minutes."
+                );
+            }
             throw new Error(
                 `API Error: ${response.status} ${response.statusText}`
             );
@@ -244,6 +283,13 @@ export async function fetchFilteredProblems(
             );
         }
 
+        // Deduplicate by questionFrontendId (remove duplicate problems)
+        const uniqueProblems = new Map<string, LeetCodeProblem>();
+        problems.forEach(problem => {
+            uniqueProblems.set(problem.questionFrontendId, problem);
+        });
+        problems = Array.from(uniqueProblems.values());
+
         return problems;
     } catch (error) {
         console.error("Error fetching filtered problems:", error);
@@ -265,7 +311,7 @@ export async function fetchFilteredProblems(
 export async function getTopicTags(): Promise<
     Array<{ name: string; slug: string; count: number }>
 > {
-    const cacheKey = "leetcode_topic_tags";
+    const cacheKey = `leetcode_topic_tags_${CACHE_VERSION}`;
 
     // Try to get from cache first
     const cachedTags =
@@ -278,28 +324,34 @@ export async function getTopicTags(): Promise<
     }
 
     try {
-        // Fetch with timeout to prevent hanging
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
-        const response = await fetch(
-            `${API_BASE_URL}/problems?limit=200&skip=0`,
-            { signal: controller.signal }
+        // Fetch with retry logic
+        const response = await fetchWithRetry(
+            `${API_BASE_URL}/problems?limit=200&skip=0`
         );
 
-        clearTimeout(timeoutId);
-
         if (!response.ok) {
+            if (response.status === 429) {
+                console.warn("Rate limited when fetching topics, using fallback");
+                throw new Error("Rate limit exceeded");
+            }
             throw new Error(`Failed to fetch: ${response.statusText}`);
         }
 
         const data: LeetCodeProblemsResponse = await response.json();
+
+        // Deduplicate problems first by questionFrontendId
+        const uniqueProblems = new Map<string, LeetCodeProblem>();
+        data.problemsetQuestionList.forEach(problem => {
+            uniqueProblems.set(problem.questionFrontendId, problem);
+        });
+        const deduplicatedProblems = Array.from(uniqueProblems.values());
+
         const tagMap = new Map<
             string,
             { name: string; slug: string; count: number }
         >();
 
-        data.problemsetQuestionList.forEach((problem) => {
+        deduplicatedProblems.forEach((problem) => {
             problem.topicTags.forEach((tag) => {
                 if (tagMap.has(tag.slug)) {
                     const existing = tagMap.get(tag.slug)!;
@@ -324,36 +376,9 @@ export async function getTopicTags(): Promise<
         return tags;
     } catch (error) {
         console.error("Error fetching topic tags:", error);
-        // Return fallback topics if API fails
-        return [
-            { name: "Array", slug: "array", count: 50 },
-            { name: "String", slug: "string", count: 45 },
-            { name: "Hash Table", slug: "hash-table", count: 40 },
-            {
-                name: "Dynamic Programming",
-                slug: "dynamic-programming",
-                count: 35,
-            },
-            { name: "Math", slug: "math", count: 30 },
-            { name: "Sorting", slug: "sorting", count: 28 },
-            { name: "Greedy", slug: "greedy", count: 25 },
-            { name: "Binary Search", slug: "binary-search", count: 22 },
-            { name: "Tree", slug: "tree", count: 20 },
-            { name: "Graph", slug: "graph", count: 18 },
-            { name: "Stack", slug: "stack", count: 16 },
-            { name: "Linked List", slug: "linked-list", count: 15 },
-            { name: "Database", slug: "database", count: 12 },
-            { name: "Binary Tree", slug: "binary-tree", count: 10 },
-            {
-                name: "Depth-First Search",
-                slug: "depth-first-search",
-                count: 10,
-            },
-            {
-                name: "Breadth-First Search",
-                slug: "breadth-first-search",
-                count: 10,
-            },
-        ];
+        // Import and return fallback topics if API fails
+        const { FALLBACK_TOPICS } = await import('./fallbackData');
+        console.log("Using fallback topic data");
+        return FALLBACK_TOPICS;
     }
 }

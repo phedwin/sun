@@ -36,10 +36,11 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Curriculum from "./pages/Curriculum";
 import { seedCacheWithMockData } from "./lib/seedCache";
+import { CACHE_VERSION } from "./lib/CONSTATS";
 
 const queryClient = new QueryClient();
 
-if (!localStorage.getItem("leetcode_problems_500_0")) {
+if (!localStorage.getItem(`leetcode_problems_${CACHE_VERSION}_500_0`)) {
     console.log("No cache found, seeding with mock data...");
     seedCacheWithMockData();
 }

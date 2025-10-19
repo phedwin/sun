@@ -83,7 +83,13 @@ const Questions = () => {
                     err instanceof Error
                         ? err.message
                         : "Failed to load questions. Please try again later.";
-                setError(errorMessage);
+
+                // Show friendly message for rate limits
+                if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
+                    setError("🌴 The API is taking a quick rest! We're using cached problems for you. Try refreshing in a few minutes for new content.");
+                } else {
+                    setError(errorMessage);
+                }
                 console.error("Error loading questions:", err);
             } finally {
                 setLoading(false);
@@ -102,7 +108,9 @@ const Questions = () => {
 
     // Navigate to code platform with question slug in URL
     const handleQuestionClick = (question: LeetCodeProblem) => {
-        navigate(`/code?question=${question.titleSlug}`);
+        // Remove trailing numbers from slug (e.g., "two-sum-1" -> "two-sum")
+        const cleanSlug = question.titleSlug.replace(/-\d+$/, '');
+        navigate(`/code?question=${cleanSlug}`);
     };
 
     const handlePageChange = (page: number) => {
@@ -244,10 +252,21 @@ const Questions = () => {
                     </div>
 
                     {error && (
-                        <div className="rounded-lg border border-red-500 bg-red-50 dark:bg-red-950 p-4">
-                            <p className="text-red-800 dark:text-red-200">
-                                {error}
-                            </p>
+                        <div className="rounded-xl border-4 border-[hsl(var(--sunset-orange))] bg-gradient-to-r from-[hsl(var(--sunset-orange))]/10 to-[hsl(var(--savanna-gold))]/10 p-6">
+                            <div className="flex items-start gap-4">
+                                <div className="text-5xl">🌴</div>
+                                <div className="flex-1">
+                                    <h3 className="text-xl font-bold mb-2 bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
+                                        Taking a Quick Rest!
+                                    </h3>
+                                    <p className="text-base leading-relaxed">
+                                        {error}
+                                    </p>
+                                    <p className="text-sm mt-3 text-muted-foreground font-semibold">
+                                        💡 All your progress is safe and cached problems are ready to practice!
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 

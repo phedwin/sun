@@ -150,38 +150,41 @@ const Landing = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-gradient-to-b from-background via-background to-[hsl(var(--earth-brown))]/5">
             <Header />
 
-            <main className="container py-8">
-                <div className="space-y-8">
-                    {/* Hero Section */}
-                    <div className="text-center space-y-4 py-12 relative overflow-hidden">
-                        <div className="absolute inset-0 -z-10">
-                            <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-gradient-to-br from-[hsl(var(--sunset-orange))] to-[hsl(var(--sunset-pink))] opacity-20 blur-3xl animate-[float_6s_ease-in-out_infinite]"></div>
-                            <div className="absolute bottom-20 right-10 w-40 h-40 rounded-full bg-gradient-to-br from-[hsl(var(--savanna-gold))] to-[hsl(var(--sky-blue))] opacity-20 blur-3xl animate-[float_8s_ease-in-out_infinite_2s]"></div>
+            <main className="container py-16 px-4">
+                <div className="space-y-16">
+                    {/* Hero Section - Simple & Calm */}
+                    <div className="text-center space-y-6 py-20 relative">
+                        {/* Subtle background orbs */}
+                        <div className="absolute inset-0 -z-10 overflow-hidden">
+                            <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[hsl(var(--sunset-orange))]/5 blur-3xl"></div>
+                            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[hsl(var(--savanna-gold))]/5 blur-3xl"></div>
                         </div>
-                        <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-[hsl(var(--sunset-orange))] via-[hsl(var(--sunset-pink))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent animate-[float_4s_ease-in-out_infinite]">
-                            Code. Code. Code :D
+
+                        {/* Peaceful sun icon */}
+                        <div className="text-8xl mb-6 opacity-80">☀️</div>
+
+                        <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4">
+                            Welcome to <span className="bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">SUN</span>
                         </h1>
-                        <p className="text-2xl text-muted-foreground max-w-3xl mx-auto font-semibold">
-                            Learn to code on a journey through vibrant lessons,
-                            collect beads of wisdom, and unlock your potential!
+
+                        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                            Your journey to mastering code starts here.
+                            <br />
+                            Simple. Focused. Beautiful.
                         </p>
-                        <div className="flex items-center justify-center gap-6 pt-4">
-                            <Badge
-                                variant="outline"
-                                className="text-lg px-4 py-2 bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--sunset-pink))] text-white border-0"
-                            >
-                                {topics.reduce((sum, t) => sum + t.count, 0)}{" "}
-                                Problems
-                            </Badge>
-                            <Badge
-                                variant="outline"
-                                className="text-lg px-4 py-2 bg-gradient-to-r from-[hsl(var(--savanna-gold))] to-[hsl(var(--sky-blue))] text-white border-0"
-                            >
-                                {topics.length} Topics
-                            </Badge>
+
+                        <div className="flex items-center justify-center gap-8 pt-8 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-[hsl(var(--sunset-orange))]"></div>
+                                <span>{topics.reduce((sum, t) => sum + t.count, 0)} Problems</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-[hsl(var(--savanna-gold))]"></div>
+                                <span>{topics.length} Topics</span>
+                            </div>
                         </div>
                     </div>
 
@@ -193,163 +196,142 @@ const Landing = () => {
                         </div>
                     )}
 
-                    {/* Topics Grid */}
-                    {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {[...Array(12)].map((_, i) => (
-                                <Card key={i} className="animate-pulse">
-                                    <CardHeader>
-                                        <div className="h-6 bg-muted rounded w-3/4"></div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="h-4 bg-muted rounded w-1/2"></div>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                    {/* Topics Grid - Calm & Simple */}
+                    <div className="space-y-8">
+                        <div className="text-center space-y-2">
+                            <h2 className="text-3xl font-bold text-foreground">
+                                Explore Topics
+                            </h2>
+                            <p className="text-muted-foreground">
+                                Choose a path and begin your learning journey
+                            </p>
                         </div>
-                    ) : (
-                        <>
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-semibold">
-                                    Browse by Topic
-                                </h2>
-                                <button
-                                    onClick={handleViewAllClick}
-                                    className="flex items-center gap-2 text-primary hover:underline"
-                                >
-                                    View All Problems
-                                    <ArrowRight className="h-4 w-4" />
-                                </button>
+
+                        {loading ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
+                                {[...Array(12)].map((_, i) => (
+                                    <Card key={i} className="animate-pulse h-32">
+                                        <CardHeader>
+                                            <div className="h-6 bg-muted rounded w-3/4"></div>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="h-4 bg-muted rounded w-1/2"></div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
+                                {animatedTopics.map(({ topic, delay, color }) => {
+                                    const Icon = getTopicIcon(topic.slug);
+                                    return (
+                                        <Card
+                                            key={topic.slug}
+                                            className="cursor-pointer hover:shadow-lg transition-all duration-300 border group relative backdrop-blur-sm bg-card/50 hover:bg-card"
+                                            style={{
+                                                animation: `fadeIn 0.6s ease-out ${delay}s both`,
+                                            }}
+                                            onClick={() => handleTopicClick(topic.slug)}
+                                        >
+                                            {/* Subtle accent line */}
+                                            <div
+                                                className="absolute top-0 left-0 right-0 h-1 rounded-t-lg"
+                                                style={{ backgroundColor: color }}
+                                            ></div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {animatedTopics.map(
-                                    ({
-                                        topic,
-                                        fromX,
-                                        fromY,
-                                        fromRotate,
-                                        delay,
-                                        color,
-                                    }) => {
-                                        const Icon = getTopicIcon(topic.slug);
-                                        return (
-                                            <Card
-                                                key={topic.slug}
-                                                className="cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300 border-4 group overflow-hidden relative"
-                                                style={{
-                                                    animation: `stackIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
-                                                    // @ts-ignore
-                                                    "--from-x": fromX,
-                                                    "--from-y": fromY,
-                                                    "--from-rotate": fromRotate,
-                                                    borderColor: color,
-                                                }}
-                                                onClick={() =>
-                                                    handleTopicClick(topic.slug)
-                                                }
-                                            >
-                                                <div
-                                                    className="absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20"
-                                                    style={{
-                                                        background: `linear-gradient(135deg, ${color} 0%, transparent 100%)`,
-                                                    }}
-                                                ></div>
-                                                <CardHeader className="pb-3 relative z-10">
-                                                    <div className="flex items-center justify-between">
-                                                        <Icon
-                                                            className="h-10 w-10 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300"
-                                                            style={{ color }}
-                                                        />
-                                                        <Badge
-                                                            className="text-white border-0 text-base px-3 py-1 font-bold"
-                                                            style={{
-                                                                background:
-                                                                    color,
-                                                            }}
-                                                        >
-                                                            {topic.count}
-                                                        </Badge>
-                                                    </div>
-                                                    <CardTitle className="text-xl mt-4 group-hover:scale-105 transition-transform font-bold">
-                                                        {topic.name}
-                                                    </CardTitle>
-                                                </CardHeader>
-                                                <CardContent className="relative z-10">
-                                                    <p className="text-base text-muted-foreground font-semibold">
-                                                        {topic.count}{" "}
-                                                        {topic.count === 1
-                                                            ? "problem"
-                                                            : "problems"}{" "}
-                                                        waiting for you
-                                                    </p>
-                                                </CardContent>
-                                            </Card>
-                                        );
-                                    }
-                                )}
+                                            <CardHeader className="pb-3">
+                                                <div className="flex items-center justify-between">
+                                                    <Icon
+                                                        className="h-8 w-8 transition-transform group-hover:scale-110"
+                                                        style={{ color, opacity: 0.8 }}
+                                                    />
+                                                    <span className="text-sm font-medium text-muted-foreground">
+                                                        {topic.count}
+                                                    </span>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <h3 className="font-semibold text-lg mb-1">
+                                                    {topic.name}
+                                                </h3>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {topic.count === 1 ? "1 problem" : `${topic.count} problems`}
+                                                </p>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
                             </div>
-                        </>
-                    )}
+                        )}
 
-                    {/* Feature Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-16">
-                        <Card
-                            className="text-center cursor-pointer hover:shadow-2xl hover:scale-110 transition-all duration-300 border-4 border-[hsl(var(--sunset-orange))] group overflow-hidden relative bg-gradient-to-br from-[hsl(var(--sunset-orange))]/5 to-transparent"
-                            onClick={() => navigate("/questions")}
-                        >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--sunset-orange))]/10 rounded-full blur-2xl"></div>
-                            <CardHeader className="relative z-10">
-                                <Code2 className="h-16 w-16 mx-auto text-[hsl(var(--sunset-orange))] group-hover:scale-125 group-hover:rotate-12 transition-all" />
-                                <CardTitle className="mt-6 text-2xl group-hover:text-[hsl(var(--sunset-orange))] transition-colors font-bold">
-                                    Real LeetCode Problems
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="relative z-10">
-                                <p className="text-muted-foreground text-lg">
-                                    Practice with actual problems from
-                                    LeetCode's extensive library
-                                </p>
-                            </CardContent>
-                        </Card>
+                        <div className="text-center pt-4">
+                            <button
+                                onClick={handleViewAllClick}
+                                className="inline-flex items-center gap-2 text-foreground hover:text-[hsl(var(--sunset-orange))] transition-colors font-medium"
+                            >
+                                View All Problems
+                                <ArrowRight className="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
 
-                        <Card
-                            className="text-center cursor-pointer hover:shadow-2xl hover:scale-110 transition-all duration-300 border-4 border-[hsl(var(--savanna-gold))] group overflow-hidden relative bg-gradient-to-br from-[hsl(var(--savanna-gold))]/5 to-transparent"
-                            onClick={() => navigate("/curriculum")}
-                        >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--savanna-gold))]/10 rounded-full blur-2xl"></div>
-                            <CardHeader className="relative z-10">
-                                <Zap className="h-16 w-16 mx-auto text-[hsl(var(--savanna-gold))] group-hover:scale-125 group-hover:rotate-12 transition-all" />
-                                <CardTitle className="mt-6 text-2xl group-hover:text-[hsl(var(--savanna-gold))] transition-colors font-bold">
-                                    Journey Through Lessons
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="relative z-10">
-                                <p className="text-muted-foreground text-lg">
-                                    Travel the roadmap, unlock huts of
-                                    knowledge, and collect beads!
-                                </p>
-                            </CardContent>
-                        </Card>
+                    {/* Feature Section - Minimal & Sweet */}
+                    <div className="max-w-4xl mx-auto space-y-6 pt-12">
+                        <div className="text-center space-y-2 mb-8">
+                            <h2 className="text-3xl font-bold text-foreground">
+                                What You'll Find
+                            </h2>
+                        </div>
 
-                        <Card
-                            className="text-center cursor-pointer hover:shadow-2xl hover:scale-110 transition-all duration-300 border-4 border-[hsl(var(--sunset-pink))] group overflow-hidden relative bg-gradient-to-br from-[hsl(var(--sunset-pink))]/5 to-transparent"
-                            onClick={() => navigate("/profile")}
-                        >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--sunset-pink))]/10 rounded-full blur-2xl"></div>
-                            <CardHeader className="relative z-10">
-                                <GitBranch className="h-16 w-16 mx-auto text-[hsl(var(--sunset-pink))] group-hover:scale-125 group-hover:rotate-12 transition-all" />
-                                <CardTitle className="mt-6 text-2xl group-hover:text-[hsl(var(--sunset-pink))] transition-colors font-bold">
-                                    Collect Your Beads
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="relative z-10">
-                                <p className="text-muted-foreground text-lg">
-                                    Watch your bead collection grow and climb
-                                    the leaderboard
-                                </p>
-                            </CardContent>
-                        </Card>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <Card
+                                className="text-center cursor-pointer hover:shadow-lg transition-all duration-300 border group relative backdrop-blur-sm bg-card/50 hover:bg-card"
+                                onClick={() => navigate("/questions")}
+                            >
+                                <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(var(--sunset-orange))] rounded-t-lg"></div>
+                                <CardHeader className="pt-8 pb-3">
+                                    <Code2 className="h-12 w-12 mx-auto text-[hsl(var(--sunset-orange))]/80 group-hover:scale-110 transition-transform" />
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    <h3 className="font-semibold text-lg">Real Problems</h3>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Practice with LeetCode's extensive problem library
+                                    </p>
+                                </CardContent>
+                            </Card>
+
+                            <Card
+                                className="text-center cursor-pointer hover:shadow-lg transition-all duration-300 border group relative backdrop-blur-sm bg-card/50 hover:bg-card"
+                                onClick={() => navigate("/curriculum")}
+                            >
+                                <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(var(--savanna-gold))] rounded-t-lg"></div>
+                                <CardHeader className="pt-8 pb-3">
+                                    <Zap className="h-12 w-12 mx-auto text-[hsl(var(--savanna-gold))]/80 group-hover:scale-110 transition-transform" />
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    <h3 className="font-semibold text-lg">Guided Journey</h3>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Follow a roadmap and collect beads of wisdom
+                                    </p>
+                                </CardContent>
+                            </Card>
+
+                            <Card
+                                className="text-center cursor-pointer hover:shadow-lg transition-all duration-300 border group relative backdrop-blur-sm bg-card/50 hover:bg-card"
+                                onClick={() => navigate("/profile")}
+                            >
+                                <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(var(--sunset-pink))] rounded-t-lg"></div>
+                                <CardHeader className="pt-8 pb-3">
+                                    <GitBranch className="h-12 w-12 mx-auto text-[hsl(var(--sunset-pink))]/80 group-hover:scale-110 transition-transform" />
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    <h3 className="font-semibold text-lg">Track Progress</h3>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Watch your growth and climb the leaderboard
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </div>
                 </div>
             </main>

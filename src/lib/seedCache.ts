@@ -21,6 +21,7 @@ THE SOFTWARE.
 */
 
 import { LeetCodeProblem } from "./leetcodeApi";
+import { CACHE_VERSION } from "./CONSTATS";
 
 const sampleProblems: LeetCodeProblem[] = [
     {
@@ -110,7 +111,7 @@ export function seedCacheWithMockData() {
         timestamp: Date.now(),
     };
 
-    localStorage.setItem("leetcode_problems_500_0", JSON.stringify(cacheData));
+    localStorage.setItem(`leetcode_problems_${CACHE_VERSION}_500_0`, JSON.stringify(cacheData));
 
     const topics = [
         { name: "Array", slug: "array", count: 150 },
@@ -134,7 +135,7 @@ export function seedCacheWithMockData() {
     };
 
     localStorage.setItem(
-        "leetcode_topic_tags",
+        `leetcode_topic_tags_${CACHE_VERSION}`,
         JSON.stringify(topicsCacheData)
     );
 

@@ -31,3 +31,6 @@ export const DAYS_OF_THE_WEEK = [
     "Fri",
     "Sat",
 ];
+
+// Increment this to invalidate all caches
+export const CACHE_VERSION = "v2";
