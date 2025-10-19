@@ -48,7 +48,6 @@ const Questions = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [selectedDifficulty, setSelectedDifficulty] = useState<
         "Easy" | "Medium" | "Hard" | null
     >(null);
@@ -66,7 +65,6 @@ const Questions = () => {
         const loadQuestions = async () => {
             try {
                 setLoading(true);
-                setError(null);
                 const problems = await fetchFilteredProblems(
                     500,
                     0,
@@ -79,18 +77,11 @@ const Questions = () => {
                 // Reset to page 1 when filters change
                 setCurrentPage(1);
             } catch (err) {
-                const errorMessage =
-                    err instanceof Error
-                        ? err.message
-                        : "Failed to load questions. Please try again later.";
-
-                // Show friendly message for rate limits
-                if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
-                    setError("🌴 The API is taking a quick rest! We're using cached problems for you. Try refreshing in a few minutes for new content.");
-                } else {
-                    setError(errorMessage);
-                }
                 console.error("Error loading questions:", err);
+                // Don't show error to user - cache handles everything
+                setAllQuestions([]);
+                setTotalQuestions(0);
+                setTotalPages(0);
             } finally {
                 setLoading(false);
             }
@@ -250,25 +241,6 @@ const Questions = () => {
                             )}
                         </div>
                     </div>
-
-                    {error && (
-                        <div className="rounded-xl border-4 border-[hsl(var(--sunset-orange))] bg-gradient-to-r from-[hsl(var(--sunset-orange))]/10 to-[hsl(var(--savanna-gold))]/10 p-6">
-                            <div className="flex items-start gap-4">
-                                <div className="text-5xl">🌴</div>
-                                <div className="flex-1">
-                                    <h3 className="text-xl font-bold mb-2 bg-gradient-to-r from-[hsl(var(--sunset-orange))] to-[hsl(var(--savanna-gold))] bg-clip-text text-transparent">
-                                        Taking a Quick Rest!
-                                    </h3>
-                                    <p className="text-base leading-relaxed">
-                                        {error}
-                                    </p>
-                                    <p className="text-sm mt-3 text-muted-foreground font-semibold">
-                                        💡 All your progress is safe and cached problems are ready to practice!
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     {loading ? (
                         <div className="rounded-lg border border-border bg-card">

@@ -51,76 +51,43 @@ const CodePlatform = () => {
                 setLoading(true);
                 setError(null);
 
-                // Try to get from cache first
-                const cacheKey = `problem_${questionSlug}`;
-                const cached = localStorage.getItem(cacheKey);
+                // Fetch from API (which handles caching internally)
+                const problemData = await fetchProblemDetail(questionSlug);
+                setProblem(problemData);
 
-                if (cached) {
-                    const problemData = JSON.parse(cached);
-                    setProblem(problemData);
+                // Generate code skeletons
+                const skeletons = {
+                    javascript: generateCodeSkeleton({
+                        slug: questionSlug,
+                        language: 'javascript'
+                    }),
+                    python: generateCodeSkeleton({
+                        slug: questionSlug,
+                        language: 'python'
+                    }),
+                    java: generateCodeSkeleton({
+                        slug: questionSlug,
+                        language: 'java'
+                    }),
+                    cpp: generateCodeSkeleton({
+                        slug: questionSlug,
+                        language: 'cpp'
+                    })
+                };
 
-                    // Generate code skeletons
-                    const skeletons = {
-                        javascript: generateCodeSkeleton({
-                            slug: questionSlug,
-                            language: 'javascript'
-                        }),
-                        python: generateCodeSkeleton({
-                            slug: questionSlug,
-                            language: 'python'
-                        }),
-                        java: generateCodeSkeleton({
-                            slug: questionSlug,
-                            language: 'java'
-                        }),
-                        cpp: generateCodeSkeleton({
-                            slug: questionSlug,
-                            language: 'cpp'
-                        })
-                    };
-
-                    setInitialCode(skeletons);
-                    setLoading(false);
-                } else {
-                    // Fetch from API
-                    const problemData = await fetchProblemDetail(questionSlug);
-                    setProblem(problemData);
-
-                    // Cache it
-                    localStorage.setItem(cacheKey, JSON.stringify(problemData));
-
-                    // Generate code skeletons
-                    const skeletons = {
-                        javascript: generateCodeSkeleton({
-                            slug: questionSlug,
-                            language: 'javascript'
-                        }),
-                        python: generateCodeSkeleton({
-                            slug: questionSlug,
-                            language: 'python'
-                        }),
-                        java: generateCodeSkeleton({
-                            slug: questionSlug,
-                            language: 'java'
-                        }),
-                        cpp: generateCodeSkeleton({
-                            slug: questionSlug,
-                            language: 'cpp'
-                        })
-                    };
-
-                    setInitialCode(skeletons);
-                    setLoading(false);
-                }
+                setInitialCode(skeletons);
+                setLoading(false);
             } catch (err) {
                 console.error("Error loading problem:", err);
                 const errorMessage = err instanceof Error ? err.message : "Failed to load problem";
 
-                // Show friendly error for rate limits
-                if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
-                    setError("🌴 API taking a rest! Try another problem or refresh in a few minutes.");
+                // Show friendly error messages
+                if (errorMessage.includes("rate limit") || errorMessage.includes("429") || errorMessage.includes("no cache available")) {
+                    setError("🌴 Slow down, champ! The API needs a break. Try refreshing the page or come back in a few minutes.");
+                } else if (errorMessage.includes("timeout")) {
+                    setError("⏰ Taking too long! The API is being slow. Try again in a moment.");
                 } else {
-                    setError(errorMessage);
+                    setError(`Oops! ${errorMessage}`);
                 }
                 setLoading(false);
             }
