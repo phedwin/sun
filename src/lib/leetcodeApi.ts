@@ -25,7 +25,11 @@ const API_BASE_URL = "https://alfa-leetcode-api.onrender.com";
 const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours cache
 
 // Retry with exponential backoff
-async function fetchWithRetry(url: string, retries = 3, backoff = 1000): Promise<Response> {
+async function fetchWithRetry(
+    url: string,
+    retries = 3,
+    backoff = 1000
+): Promise<Response> {
     for (let i = 0; i < retries; i++) {
         try {
             const controller = new AbortController();
@@ -38,8 +42,12 @@ async function fetchWithRetry(url: string, retries = 3, backoff = 1000): Promise
             if (response.status === 429) {
                 if (i < retries - 1) {
                     const waitTime = backoff * Math.pow(2, i);
-                    console.log(`Rate limited. Waiting ${waitTime}ms before retry ${i + 1}/${retries}...`);
-                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                    console.log(
+                        `Rate limited. Waiting ${waitTime}ms before retry ${i + 1}/${retries}...`
+                    );
+                    await new Promise((resolve) =>
+                        setTimeout(resolve, waitTime)
+                    );
                     continue;
                 }
             }
@@ -48,10 +56,10 @@ async function fetchWithRetry(url: string, retries = 3, backoff = 1000): Promise
         } catch (error) {
             if (i === retries - 1) throw error;
             const waitTime = backoff * Math.pow(2, i);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
+            await new Promise((resolve) => setTimeout(resolve, waitTime));
         }
     }
-    throw new Error('Max retries reached');
+    throw new Error("Max retries reached");
 }
 
 interface CachedData<T> {
@@ -170,7 +178,9 @@ export async function fetchProblemDetail(
     // Try cache first
     const cached = getCachedData<LeetCodeProblemDetail>(cacheKey);
     if (cached) {
-        console.log(`✅ Using cached problem "${titleSlug}" (valid for 2 hours)`);
+        console.log(
+            `✅ Using cached problem "${titleSlug}" (valid for 2 hours)`
+        );
         return cached;
     }
 
@@ -182,7 +192,9 @@ export async function fetchProblemDetail(
         );
 
         if (!response.ok) {
-            throw new Error(`Failed to fetch problem detail: ${response.statusText}`);
+            throw new Error(
+                `Failed to fetch problem detail: ${response.statusText}`
+            );
         }
 
         const data: LeetCodeProblemDetail = await response.json();
@@ -236,7 +248,7 @@ function applyFiltersAndDeduplicate(
 
     // Deduplicate by questionFrontendId
     const uniqueProblems = new Map<string, LeetCodeProblem>();
-    filtered.forEach(problem => {
+    filtered.forEach((problem) => {
         uniqueProblems.set(problem.questionFrontendId, problem);
     });
 
@@ -266,7 +278,9 @@ export async function fetchFilteredProblems(
         );
 
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            throw new Error(
+                `API Error: ${response.status} ${response.statusText}`
+            );
         }
 
         const data: LeetCodeProblemsResponse = await response.json();
@@ -277,16 +291,22 @@ export async function fetchFilteredProblems(
 
         // DEDUPLICATE BEFORE CACHING using Set with questionFrontendId
         const uniqueProblems = new Map<string, LeetCodeProblem>();
-        data.problemsetQuestionList.forEach(problem => {
+        data.problemsetQuestionList.forEach((problem) => {
             uniqueProblems.set(problem.questionFrontendId, problem);
         });
         const deduplicatedProblems = Array.from(uniqueProblems.values());
 
         // Cache the deduplicated data for 2 hours
         setCachedData(cacheKey, deduplicatedProblems);
-        console.log(`✅ Cached ${deduplicatedProblems.length} unique problems for 2 hours`);
+        console.log(
+            `✅ Cached ${deduplicatedProblems.length} unique problems for 2 hours`
+        );
 
-        return applyFiltersAndDeduplicate(deduplicatedProblems, difficulty, topic);
+        return applyFiltersAndDeduplicate(
+            deduplicatedProblems,
+            difficulty,
+            topic
+        );
     } catch (error) {
         console.error("Error fetching filtered problems:", error);
         throw error;
@@ -302,7 +322,10 @@ export async function getTopicTags(): Promise<
     const cacheKey = `leetcode_topic_tags_${CACHE_VERSION}`;
 
     // Try cache first
-    const cachedTags = getCachedData<Array<{ name: string; slug: string; count: number }>>(cacheKey);
+    const cachedTags =
+        getCachedData<Array<{ name: string; slug: string; count: number }>>(
+            cacheKey
+        );
     if (cachedTags) {
         console.log("✅ Using cached topic tags (valid for 2 hours)");
         return cachedTags;
@@ -323,7 +346,7 @@ export async function getTopicTags(): Promise<
 
         // Deduplicate problems first by questionFrontendId
         const uniqueProblems = new Map<string, LeetCodeProblem>();
-        data.problemsetQuestionList.forEach(problem => {
+        data.problemsetQuestionList.forEach((problem) => {
             uniqueProblems.set(problem.questionFrontendId, problem);
         });
         const deduplicatedProblems = Array.from(uniqueProblems.values());
@@ -361,7 +384,7 @@ export async function getTopicTags(): Promise<
         console.error("Error fetching topic tags:", error);
 
         // Import and return fallback topics
-        const { FALLBACK_TOPICS } = await import('./fallbackData');
+        const { FALLBACK_TOPICS } = await import("./fallbackData");
         console.log("Using fallback topic data");
         return FALLBACK_TOPICS;
     }

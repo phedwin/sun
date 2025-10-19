@@ -39,8 +39,8 @@ const io = new SocketServer(httpServer, {
     cors: {
         origin: process.env.CLIENT_URL || "http://localhost:1313",
         methods: ["GET", "POST"],
-        credentials: true
-    }
+        credentials: true,
+    },
 });
 
 const PORT = process.env.PORT || 3001;
@@ -76,8 +76,8 @@ const rooms = new Map<string, Room>();
 
 // Generate random room code (6 characters)
 function generateRoomCode(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let code = "";
     for (let i = 0; i < 6; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -87,8 +87,14 @@ function generateRoomCode(): string {
 // Generate random color for user cursor
 function generateUserColor(): string {
     const colors = [
-        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
-        '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'
+        "#FF6B6B",
+        "#4ECDC4",
+        "#45B7D1",
+        "#FFA07A",
+        "#98D8C8",
+        "#F7DC6F",
+        "#BB8FCE",
+        "#85C1E2",
     ];
     return colors[Math.floor(Math.random() * colors.length)];
 }
@@ -103,15 +109,15 @@ io.on("connection", (socket) => {
             id: roomCode,
             name: `${username}'s Room`,
             users: new Map(),
-            code: '',
-            language: 'javascript',
-            question: questionSlug
+            code: "",
+            language: "javascript",
+            question: questionSlug,
         };
 
         const user: User = {
             id: socket.id,
             username,
-            color: generateUserColor()
+            color: generateUserColor(),
         };
 
         room.users.set(socket.id, user);
@@ -127,8 +133,8 @@ io.on("connection", (socket) => {
                 users: Array.from(room.users.values()),
                 code: room.code,
                 language: room.language,
-                question: room.question
-            }
+                question: room.question,
+            },
         });
 
         console.log(`🏠 Room created: ${roomCode} by ${username}`);
@@ -146,7 +152,7 @@ io.on("connection", (socket) => {
         const user: User = {
             id: socket.id,
             username,
-            color: generateUserColor()
+            color: generateUserColor(),
         };
 
         room.users.set(socket.id, user);
@@ -161,8 +167,8 @@ io.on("connection", (socket) => {
                 users: Array.from(room.users.values()),
                 code: room.code,
                 language: room.language,
-                question: room.question
-            }
+                question: room.question,
+            },
         });
 
         // Notify others in the room
@@ -188,7 +194,7 @@ io.on("connection", (socket) => {
         try {
             await prisma.room.update({
                 where: { code: roomCode },
-                data: { currentCode: code }
+                data: { currentCode: code },
             });
         } catch (error) {
             console.error("Error saving code:", error);
@@ -198,7 +204,7 @@ io.on("connection", (socket) => {
         socket.to(roomCode).emit("code_updated", {
             code,
             userId: socket.id,
-            cursorPosition
+            cursorPosition,
         });
     });
 
@@ -216,7 +222,7 @@ io.on("connection", (socket) => {
             userId: socket.id,
             username: user?.username,
             color: user?.color,
-            cursorPosition
+            cursorPosition,
         });
     });
 
@@ -234,12 +240,14 @@ io.on("connection", (socket) => {
             username: user.username,
             color: user.color,
             message,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         };
 
         // Persist message to database
         try {
-            const dbRoom = await prisma.room.findUnique({ where: { code: roomCode } });
+            const dbRoom = await prisma.room.findUnique({
+                where: { code: roomCode },
+            });
             if (dbRoom) {
                 await prisma.message.create({
                     data: {
@@ -247,8 +255,8 @@ io.on("connection", (socket) => {
                         userId: user.id,
                         username: user.username,
                         content: message,
-                        type: "text"
-                    }
+                        type: "text",
+                    },
                 });
             }
         } catch (error) {
@@ -270,7 +278,7 @@ io.on("connection", (socket) => {
         try {
             await prisma.room.update({
                 where: { code: roomCode },
-                data: { currentLanguage: language }
+                data: { currentLanguage: language },
             });
         } catch (error) {
             console.error("Error saving language:", error);
@@ -291,17 +299,19 @@ io.on("connection", (socket) => {
 
                 // Update member status in database
                 try {
-                    const dbRoom = await prisma.room.findUnique({ where: { code: roomCode } });
+                    const dbRoom = await prisma.room.findUnique({
+                        where: { code: roomCode },
+                    });
                     if (dbRoom && user) {
                         await prisma.roomMember.updateMany({
                             where: {
                                 roomId: dbRoom.id,
-                                userId: user.id
+                                userId: user.id,
                             },
                             data: {
                                 isOnline: false,
-                                lastSeenAt: new Date()
-                            }
+                                lastSeenAt: new Date(),
+                            },
                         });
                     }
                 } catch (error) {
@@ -311,13 +321,15 @@ io.on("connection", (socket) => {
                 // Notify others
                 socket.to(roomCode).emit("user_left", {
                     userId: socket.id,
-                    username: user?.username
+                    username: user?.username,
                 });
 
                 // Delete empty rooms (from memory, not database)
                 if (room.users.size === 0) {
                     rooms.delete(roomCode);
-                    console.log(`🗑️ Room ${roomCode} removed from memory (empty)`);
+                    console.log(
+                        `🗑️ Room ${roomCode} removed from memory (empty)`
+                    );
                 }
             }
         });

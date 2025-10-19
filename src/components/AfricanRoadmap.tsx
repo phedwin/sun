@@ -23,17 +23,35 @@ interface RoadmapProps {
     currentLessonId?: string;
 }
 
-export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: RoadmapProps) => {
+export const AfricanRoadmap = ({
+    lessons,
+    onLessonClick,
+    currentLessonId,
+}: RoadmapProps) => {
     const [carPosition, setCarPosition] = useState({ x: 0, y: 0 });
     const [showCar, setShowCar] = useState(false);
     const [isDriving, setIsDriving] = useState(false);
-    const [sceneryItems, setSceneryItems] = useState<Array<{ emoji: string; x: number; y: number; size: number; animation?: string }>>([]);
-    const [walkingPeople, setWalkingPeople] = useState<Array<{ emoji: string; x: number; y: number; direction: number }>>([]);
+    const [sceneryItems, setSceneryItems] = useState<
+        Array<{
+            emoji: string;
+            x: number;
+            y: number;
+            size: number;
+            animation?: string;
+        }>
+    >([]);
+    const [walkingPeople, setWalkingPeople] = useState<
+        Array<{ emoji: string; x: number; y: number; direction: number }>
+    >([]);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Find current lesson and next unlocked lesson
-    const currentLesson = lessons.find(l => l.id === currentLessonId) || lessons.find(l => !l.isLocked && !l.isCompleted);
-    const nextUnlockedLesson = lessons.find(l => !l.isLocked && !l.isCompleted && l.id !== currentLesson?.id);
+    const currentLesson =
+        lessons.find((l) => l.id === currentLessonId) ||
+        lessons.find((l) => !l.isLocked && !l.isCompleted);
+    const nextUnlockedLesson = lessons.find(
+        (l) => !l.isLocked && !l.isCompleted && l.id !== currentLesson?.id
+    );
 
     useEffect(() => {
         if (currentLesson) {
@@ -46,24 +64,31 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
     useEffect(() => {
         if (lessons.length === 0) return;
 
-        const scenery: Array<{ emoji: string; x: number; y: number; size: number; animation?: string }> = [];
+        const scenery: Array<{
+            emoji: string;
+            x: number;
+            y: number;
+            size: number;
+            animation?: string;
+        }> = [];
         const mapHeight = lessons.length * 300 + 600;
-        const mapWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+        const mapWidth =
+            typeof window !== "undefined" ? window.innerWidth : 1200;
 
         // Add varied scenery on both sides
         const leftScenery = [
-            { emoji: '🌴', count: 10, size: [3, 5] },
-            { emoji: '🦁', count: 2, size: [2.5, 3.5], animation: 'float' },
-            { emoji: '🌺', count: 12, size: [1.5, 2.5] },
-            { emoji: '🌾', count: 18, size: [1, 2] },
+            { emoji: "🌴", count: 10, size: [3, 5] },
+            { emoji: "🦁", count: 2, size: [2.5, 3.5], animation: "float" },
+            { emoji: "🌺", count: 12, size: [1.5, 2.5] },
+            { emoji: "🌾", count: 18, size: [1, 2] },
         ];
 
         const rightScenery = [
-            { emoji: '🦒', count: 3, size: [3.5, 4.5], animation: 'float' },
-            { emoji: '🐘', count: 2, size: [3.5, 4.5], animation: 'float' },
-            { emoji: '🦓', count: 3, size: [2.5, 3.5], animation: 'float' },
-            { emoji: '🌴', count: 10, size: [3, 5] },
-            { emoji: '🏔️', count: 5, size: [5, 7] },
+            { emoji: "🦒", count: 3, size: [3.5, 4.5], animation: "float" },
+            { emoji: "🐘", count: 2, size: [3.5, 4.5], animation: "float" },
+            { emoji: "🦓", count: 3, size: [2.5, 3.5], animation: "float" },
+            { emoji: "🌴", count: 10, size: [3, 5] },
+            { emoji: "🏔️", count: 5, size: [5, 7] },
         ];
 
         // Distribute left scenery
@@ -97,22 +122,35 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
             const lakeY = (mapHeight / 4) * (i + 0.7);
             const side = i % 2 === 0 ? 80 : mapWidth - 230;
 
-            scenery.push({ emoji: '💧', x: side, y: lakeY, size: 7 });
-            scenery.push({ emoji: '⛵', x: side + 50, y: lakeY + 25, size: 2.8, animation: 'float' });
+            scenery.push({ emoji: "💧", x: side, y: lakeY, size: 7 });
+            scenery.push({
+                emoji: "⛵",
+                x: side + 50,
+                y: lakeY + 25,
+                size: 2.8,
+                animation: "float",
+            });
         }
 
         setSceneryItems(scenery);
 
         // Add walking people on the road
-        const people: Array<{ emoji: string; x: number; y: number; direction: number }> = [];
-        const pedestrians = ['🚶', '🚶‍♀️', '👨‍🌾', '👩‍🌾', '🧑', '👶'];
+        const people: Array<{
+            emoji: string;
+            x: number;
+            y: number;
+            direction: number;
+        }> = [];
+        const pedestrians = ["🚶", "🚶‍♀️", "👨‍🌾", "👩‍🌾", "🧑", "👶"];
 
         for (let i = 0; i < 8; i++) {
             const lesson = lessons[Math.floor(Math.random() * lessons.length)];
             const offset = (Math.random() - 0.5) * 60; // Walk near the road edge
 
             people.push({
-                emoji: pedestrians[Math.floor(Math.random() * pedestrians.length)],
+                emoji: pedestrians[
+                    Math.floor(Math.random() * pedestrians.length)
+                ],
                 x: lesson.position.x + offset,
                 y: lesson.position.y + (Math.random() - 0.5) * 100,
                 direction: Math.random() > 0.5 ? 1 : -1,
@@ -123,10 +161,12 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
 
         // Animate people walking
         const walkInterval = setInterval(() => {
-            setWalkingPeople(prev => prev.map(person => ({
-                ...person,
-                y: person.y + person.direction * 2,
-            })));
+            setWalkingPeople((prev) =>
+                prev.map((person) => ({
+                    ...person,
+                    y: person.y + person.direction * 2,
+                }))
+            );
         }, 100);
 
         return () => clearInterval(walkInterval);
@@ -153,9 +193,10 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
             const progress = Math.min(elapsed / duration, 1);
 
             // Ease in-out function
-            const easeProgress = progress < 0.5
-                ? 2 * progress * progress
-                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+            const easeProgress =
+                progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
             const currentX = startX + (endX - startX) * easeProgress;
             const currentY = startY + (endY - startY) * easeProgress;
@@ -184,15 +225,21 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
     };
 
     const getBeadColor = (index: number) => {
-        const colors = ['hsl(var(--bead-red))', 'hsl(var(--bead-yellow))', 'hsl(var(--bead-blue))', 'hsl(var(--bead-green))'];
+        const colors = [
+            "hsl(var(--bead-red))",
+            "hsl(var(--bead-yellow))",
+            "hsl(var(--bead-blue))",
+            "hsl(var(--bead-green))",
+        ];
         return colors[index % colors.length];
     };
 
     // Generate realistic straight road with slight curves
     const generatePath = () => {
-        if (lessons.length === 0) return '';
+        if (lessons.length === 0) return "";
 
-        const centerX = typeof window !== 'undefined' ? window.innerWidth / 2 : 600;
+        const centerX =
+            typeof window !== "undefined" ? window.innerWidth / 2 : 600;
         let path = `M ${centerX} 100`;
 
         lessons.forEach((lesson, i) => {
@@ -214,7 +261,10 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
         <div
             ref={containerRef}
             className="relative w-full py-12 px-4 overflow-x-hidden overflow-y-auto bg-gradient-to-b from-[hsl(var(--sky-blue))]/8 to-[hsl(var(--savanna-gold))]/8"
-            style={{ minHeight: `${lessons.length * 300 + 600}px`, maxHeight: '90vh' }}
+            style={{
+                minHeight: `${lessons.length * 300 + 600}px`,
+                maxHeight: "90vh",
+            }}
         >
             {/* Sky background */}
             <div className="absolute inset-0 bg-gradient-to-b from-[hsl(var(--sky-blue))]/12 via-transparent to-[hsl(var(--earth-brown))]/8 -z-20"></div>
@@ -228,10 +278,13 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
                         left: `${item.x}px`,
                         top: `${item.y}px`,
                         fontSize: `${item.size}rem`,
-                        animation: item.animation === 'float' ? 'float 3s ease-in-out infinite' : 'none',
+                        animation:
+                            item.animation === "float"
+                                ? "float 3s ease-in-out infinite"
+                                : "none",
                         animationDelay: `${index * 0.2}s`,
-                        zIndex: item.emoji === '🏔️' ? 1 : 5,
-                        opacity: item.emoji === '🏔️' ? 0.35 : 1,
+                        zIndex: item.emoji === "🏔️" ? 1 : 5,
+                        opacity: item.emoji === "🏔️" ? 0.35 : 1,
                     }}
                 >
                     {item.emoji}
@@ -246,8 +299,9 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
                     style={{
                         left: `${person.x}px`,
                         top: `${person.y}px`,
-                        fontSize: '2rem',
-                        transform: person.direction > 0 ? 'scaleX(1)' : 'scaleX(-1)',
+                        fontSize: "2rem",
+                        transform:
+                            person.direction > 0 ? "scaleX(1)" : "scaleX(-1)",
                         zIndex: 15,
                     }}
                 >
@@ -256,19 +310,68 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
             ))}
 
             {/* The Road - Straight and realistic */}
-            <svg className="absolute inset-0 w-full h-full z-10" style={{ minHeight: `${lessons.length * 300 + 600}px` }}>
+            <svg
+                className="absolute inset-0 w-full h-full z-10"
+                style={{ minHeight: `${lessons.length * 300 + 600}px` }}
+            >
                 <defs>
-                    <pattern id="asphalt" patternUnits="userSpaceOnUse" width="40" height="40">
-                        <rect width="40" height="40" fill="hsl(var(--earth-brown))" opacity="0.5"/>
-                        <circle cx="10" cy="10" r="2" fill="hsl(var(--earth-brown))" opacity="0.7"/>
-                        <circle cx="30" cy="30" r="2" fill="hsl(var(--earth-brown))" opacity="0.7"/>
-                        <circle cx="20" cy="25" r="1.5" fill="hsl(var(--earth-brown))" opacity="0.6"/>
+                    <pattern
+                        id="asphalt"
+                        patternUnits="userSpaceOnUse"
+                        width="40"
+                        height="40"
+                    >
+                        <rect
+                            width="40"
+                            height="40"
+                            fill="hsl(var(--earth-brown))"
+                            opacity="0.5"
+                        />
+                        <circle
+                            cx="10"
+                            cy="10"
+                            r="2"
+                            fill="hsl(var(--earth-brown))"
+                            opacity="0.7"
+                        />
+                        <circle
+                            cx="30"
+                            cy="30"
+                            r="2"
+                            fill="hsl(var(--earth-brown))"
+                            opacity="0.7"
+                        />
+                        <circle
+                            cx="20"
+                            cy="25"
+                            r="1.5"
+                            fill="hsl(var(--earth-brown))"
+                            opacity="0.6"
+                        />
                     </pattern>
 
-                    <linearGradient id="road-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="hsl(var(--earth-brown))" stopOpacity="0.6"/>
-                        <stop offset="50%" stopColor="hsl(var(--earth-brown))" stopOpacity="0.5"/>
-                        <stop offset="100%" stopColor="hsl(var(--earth-brown))" stopOpacity="0.6"/>
+                    <linearGradient
+                        id="road-gradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="0%"
+                        y2="100%"
+                    >
+                        <stop
+                            offset="0%"
+                            stopColor="hsl(var(--earth-brown))"
+                            stopOpacity="0.6"
+                        />
+                        <stop
+                            offset="50%"
+                            stopColor="hsl(var(--earth-brown))"
+                            stopOpacity="0.5"
+                        />
+                        <stop
+                            offset="100%"
+                            stopColor="hsl(var(--earth-brown))"
+                            stopOpacity="0.6"
+                        />
                     </linearGradient>
                 </defs>
 
@@ -324,18 +427,27 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
                     style={{
                         left: `${carPosition.x - 40}px`,
                         top: `${carPosition.y - 75}px`,
-                        transitionDuration: isDriving ? '100ms' : '1000ms',
+                        transitionDuration: isDriving ? "100ms" : "1000ms",
                     }}
                 >
                     <div className="relative">
-                        <div className="text-7xl" style={{ transform: isDriving ? 'none' : 'none' }}>
+                        <div
+                            className="text-7xl"
+                            style={{ transform: isDriving ? "none" : "none" }}
+                        >
                             🚚
                         </div>
                         {isDriving && (
                             <>
-                                <div className="absolute -bottom-6 -left-8 text-4xl opacity-70 animate-[dustCloud_0.6s_ease-out_infinite]">💨</div>
-                                <div className="absolute -bottom-6 -left-16 text-3xl opacity-50 animate-[dustCloud_0.6s_ease-out_infinite_0.2s]">💨</div>
-                                <div className="absolute -bottom-6 -left-24 text-2xl opacity-30 animate-[dustCloud_0.6s_ease-out_infinite_0.4s]">💨</div>
+                                <div className="absolute -bottom-6 -left-8 text-4xl opacity-70 animate-[dustCloud_0.6s_ease-out_infinite]">
+                                    💨
+                                </div>
+                                <div className="absolute -bottom-6 -left-16 text-3xl opacity-50 animate-[dustCloud_0.6s_ease-out_infinite_0.2s]">
+                                    💨
+                                </div>
+                                <div className="absolute -bottom-6 -left-24 text-2xl opacity-30 animate-[dustCloud_0.6s_ease-out_infinite_0.4s]">
+                                    💨
+                                </div>
                             </>
                         )}
                     </div>
@@ -344,9 +456,7 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
 
             {/* Drive to next lesson button */}
             {nextUnlockedLesson && !isDriving && (
-                <div
-                    className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50"
-                >
+                <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50">
                     <Button
                         onClick={driveToNextLesson}
                         size="lg"
@@ -383,20 +493,26 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
                             <Card
                                 className={`
                                     relative w-80 cursor-pointer transition-all duration-300
-                                    ${lesson.isLocked ? 'opacity-60 cursor-not-allowed' : 'hover:scale-110 hover:shadow-2xl hover:z-50'}
-                                    ${isCurrentLesson ? 'ring-4 ring-[hsl(var(--savanna-gold))] scale-110 shadow-2xl' : ''}
-                                    ${lesson.isCompleted ? 'border-4 border-[hsl(var(--bead-green))]' : 'border-4 border-[hsl(var(--earth-brown))]'}
+                                    ${lesson.isLocked ? "opacity-60 cursor-not-allowed" : "hover:scale-110 hover:shadow-2xl hover:z-50"}
+                                    ${isCurrentLesson ? "ring-4 ring-[hsl(var(--savanna-gold))] scale-110 shadow-2xl" : ""}
+                                    ${lesson.isCompleted ? "border-4 border-[hsl(var(--bead-green))]" : "border-4 border-[hsl(var(--earth-brown))]"}
                                 `}
-                                onClick={() => !lesson.isLocked && onLessonClick(lesson.id)}
+                                onClick={() =>
+                                    !lesson.isLocked && onLessonClick(lesson.id)
+                                }
                                 style={{
                                     background: lesson.isCompleted
-                                        ? 'linear-gradient(135deg, hsl(var(--bead-green) / 0.15), hsl(var(--card)))'
-                                        : 'linear-gradient(135deg, hsl(var(--earth-brown) / 0.08), hsl(var(--card)))',
+                                        ? "linear-gradient(135deg, hsl(var(--bead-green) / 0.15), hsl(var(--card)))"
+                                        : "linear-gradient(135deg, hsl(var(--earth-brown) / 0.08), hsl(var(--card)))",
                                 }}
                             >
                                 {/* Hut roof */}
                                 <div className="absolute -top-14 left-1/2 -translate-x-1/2 text-8xl drop-shadow-2xl">
-                                    {lesson.isLocked ? '🔒' : lesson.isCompleted ? '✨' : '🛖'}
+                                    {lesson.isLocked
+                                        ? "🔒"
+                                        : lesson.isCompleted
+                                          ? "✨"
+                                          : "🛖"}
                                 </div>
 
                                 <CardContent className="pt-16 pb-6 px-6">
@@ -424,20 +540,24 @@ export const AfricanRoadmap = ({ lessons, onLessonClick, currentLessonId }: Road
                                     </p>
 
                                     {/* Beads earned */}
-                                    {lesson.isCompleted && lesson.beadsEarned && (
-                                        <div className="flex justify-center items-center gap-1.5 mt-4">
-                                            {Array.from({ length: lesson.beadsEarned }).map((_, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="w-8 h-8 rounded-full animate-[beadShine_2s_ease-in-out_infinite] shadow-lg"
-                                                    style={{
-                                                        background: getBeadColor(i),
-                                                        animationDelay: `${i * 0.2}s`,
-                                                    }}
-                                                />
-                                            ))}
-                                        </div>
-                                    )}
+                                    {lesson.isCompleted &&
+                                        lesson.beadsEarned && (
+                                            <div className="flex justify-center items-center gap-1.5 mt-4">
+                                                {Array.from({
+                                                    length: lesson.beadsEarned,
+                                                }).map((_, i) => (
+                                                    <div
+                                                        key={i}
+                                                        className="w-8 h-8 rounded-full animate-[beadShine_2s_ease-in-out_infinite] shadow-lg"
+                                                        style={{
+                                                            background:
+                                                                getBeadColor(i),
+                                                            animationDelay: `${i * 0.2}s`,
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
 
                                     {lesson.isLocked && (
                                         <p className="text-xs text-center text-muted-foreground mt-3 font-semibold">

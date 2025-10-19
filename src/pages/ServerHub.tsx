@@ -25,7 +25,13 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -38,7 +44,7 @@ import {
     Mic,
     Hash,
     ChevronRight,
-    Sparkles
+    Sparkles,
 } from "lucide-react";
 
 interface ActiveServer {
@@ -87,20 +93,25 @@ export default function ServerHub() {
 
         setCreating(true);
         try {
-            const response = await fetch("http://localhost:3001/api/rooms/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: createServerName,
-                    description: createServerDescription || null,
-                    username
-                })
-            });
+            const response = await fetch(
+                "http://localhost:3001/api/rooms/create",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: createServerName,
+                        description: createServerDescription || null,
+                        username,
+                    }),
+                }
+            );
 
             if (response.ok) {
                 const data = await response.json();
                 // Navigate to collab room with the new room code
-                navigate(`/collab/${data.room.code}?username=${encodeURIComponent(username)}`);
+                navigate(
+                    `/collab/${data.room.code}?username=${encodeURIComponent(username)}`
+                );
             } else {
                 console.error("Failed to create server");
             }
@@ -114,7 +125,9 @@ export default function ServerHub() {
     const handleJoinServer = async () => {
         if (!joinCode.trim() || !username.trim()) return;
 
-        navigate(`/collab/${joinCode.toUpperCase()}?username=${encodeURIComponent(username)}`);
+        navigate(
+            `/collab/${joinCode.toUpperCase()}?username=${encodeURIComponent(username)}`
+        );
     };
 
     return (
@@ -126,7 +139,9 @@ export default function ServerHub() {
                 <div className="text-center space-y-4 mb-12">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[hsl(var(--sky-blue))]/20 to-[hsl(var(--bead-blue))]/20 border border-[hsl(var(--sky-blue))]/30">
                         <Sparkles className="h-4 w-4 text-[hsl(var(--sky-blue))]" />
-                        <span className="text-sm font-medium">Collaborate in Real-Time</span>
+                        <span className="text-sm font-medium">
+                            Collaborate in Real-Time
+                        </span>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold">
                         <span className="bg-gradient-to-r from-[hsl(var(--sky-blue))] to-[hsl(var(--bead-blue))] bg-clip-text text-transparent">
@@ -134,7 +149,8 @@ export default function ServerHub() {
                         </span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Create your own coding space or join others. Code together, chat, and learn!
+                        Create your own coding space or join others. Code
+                        together, chat, and learn!
                     </p>
                 </div>
 
@@ -151,7 +167,10 @@ export default function ServerHub() {
                         <CardContent>
                             <Tabs defaultValue="create" className="w-full">
                                 <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="create" className="gap-2">
+                                    <TabsTrigger
+                                        value="create"
+                                        className="gap-2"
+                                    >
                                         <Plus className="h-4 w-4" />
                                         Create
                                     </TabsTrigger>
@@ -162,7 +181,10 @@ export default function ServerHub() {
                                 </TabsList>
 
                                 {/* Create Server Tab */}
-                                <TabsContent value="create" className="space-y-4 mt-6">
+                                <TabsContent
+                                    value="create"
+                                    className="space-y-4 mt-6"
+                                >
                                     <div>
                                         <label className="text-sm font-medium mb-2 block">
                                             Your Username
@@ -170,7 +192,9 @@ export default function ServerHub() {
                                         <Input
                                             placeholder="Enter your name..."
                                             value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
+                                            onChange={(e) =>
+                                                setUsername(e.target.value)
+                                            }
                                         />
                                     </div>
                                     <div>
@@ -180,7 +204,11 @@ export default function ServerHub() {
                                         <Input
                                             placeholder="e.g. My Coding Squad"
                                             value={createServerName}
-                                            onChange={(e) => setCreateServerName(e.target.value)}
+                                            onChange={(e) =>
+                                                setCreateServerName(
+                                                    e.target.value
+                                                )
+                                            }
                                         />
                                     </div>
                                     <div>
@@ -190,13 +218,19 @@ export default function ServerHub() {
                                         <Input
                                             placeholder="What's this server about?"
                                             value={createServerDescription}
-                                            onChange={(e) => setCreateServerDescription(e.target.value)}
+                                            onChange={(e) =>
+                                                setCreateServerDescription(
+                                                    e.target.value
+                                                )
+                                            }
                                         />
                                     </div>
 
                                     {/* Feature Highlights */}
                                     <div className="p-4 rounded-lg bg-muted space-y-2">
-                                        <p className="text-sm font-medium">Your server includes:</p>
+                                        <p className="text-sm font-medium">
+                                            Your server includes:
+                                        </p>
                                         <div className="grid grid-cols-2 gap-2 text-xs">
                                             <div className="flex items-center gap-2">
                                                 <Code2 className="h-3 w-3 text-[hsl(var(--sunset-orange))]" />
@@ -221,15 +255,24 @@ export default function ServerHub() {
                                         className="w-full bg-gradient-to-r from-[hsl(var(--sky-blue))] to-[hsl(var(--bead-blue))] hover:opacity-90"
                                         size="lg"
                                         onClick={handleCreateServer}
-                                        disabled={!createServerName.trim() || !username.trim() || creating}
+                                        disabled={
+                                            !createServerName.trim() ||
+                                            !username.trim() ||
+                                            creating
+                                        }
                                     >
                                         <Plus className="h-4 w-4 mr-2" />
-                                        {creating ? "Creating..." : "Create Server"}
+                                        {creating
+                                            ? "Creating..."
+                                            : "Create Server"}
                                     </Button>
                                 </TabsContent>
 
                                 {/* Join Server Tab */}
-                                <TabsContent value="join" className="space-y-4 mt-6">
+                                <TabsContent
+                                    value="join"
+                                    className="space-y-4 mt-6"
+                                >
                                     <div>
                                         <label className="text-sm font-medium mb-2 block">
                                             Your Username
@@ -237,7 +280,9 @@ export default function ServerHub() {
                                         <Input
                                             placeholder="Enter your name..."
                                             value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
+                                            onChange={(e) =>
+                                                setUsername(e.target.value)
+                                            }
                                         />
                                     </div>
                                     <div>
@@ -247,7 +292,11 @@ export default function ServerHub() {
                                         <Input
                                             placeholder="ABC123"
                                             value={joinCode}
-                                            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                                            onChange={(e) =>
+                                                setJoinCode(
+                                                    e.target.value.toUpperCase()
+                                                )
+                                            }
                                             maxLength={6}
                                             className="uppercase text-lg tracking-wider font-mono"
                                         />
@@ -255,7 +304,8 @@ export default function ServerHub() {
 
                                     <div className="p-4 rounded-lg bg-muted/50 border border-border">
                                         <p className="text-sm text-muted-foreground">
-                                            💡 <strong>Tip:</strong> Ask your friend for their server code or
+                                            💡 <strong>Tip:</strong> Ask your
+                                            friend for their server code or
                                             browse active servers below to join!
                                         </p>
                                     </div>
@@ -264,7 +314,9 @@ export default function ServerHub() {
                                         className="w-full"
                                         size="lg"
                                         onClick={handleJoinServer}
-                                        disabled={!joinCode.trim() || !username.trim()}
+                                        disabled={
+                                            !joinCode.trim() || !username.trim()
+                                        }
                                     >
                                         <LogIn className="h-4 w-4 mr-2" />
                                         Join Server
@@ -303,21 +355,32 @@ export default function ServerHub() {
                                                     {server.name}
                                                 </h3>
                                                 <p className="text-sm text-muted-foreground mb-3">
-                                                    {server.description || `Created by ${server.creatorName}`}
-                                                    {server.currentProblem && ` • ${server.currentProblem}`}
+                                                    {server.description ||
+                                                        `Created by ${server.creatorName}`}
+                                                    {server.currentProblem &&
+                                                        ` • ${server.currentProblem}`}
                                                 </p>
                                                 <div className="flex items-center gap-3 text-xs">
-                                                    <Badge variant="secondary" className="gap-1">
+                                                    <Badge
+                                                        variant="secondary"
+                                                        className="gap-1"
+                                                    >
                                                         <Users className="h-3 w-3" />
                                                         {server.totalMembers}
                                                     </Badge>
                                                     <div className="flex items-center gap-1">
                                                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                                                         <span className="text-muted-foreground">
-                                                            {server.onlineMembers} online
+                                                            {
+                                                                server.onlineMembers
+                                                            }{" "}
+                                                            online
                                                         </span>
                                                     </div>
-                                                    <Badge variant="outline" className="font-mono">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="font-mono"
+                                                    >
                                                         {server.code}
                                                     </Badge>
                                                 </div>
@@ -328,15 +391,22 @@ export default function ServerHub() {
                                 ))
                             ) : (
                                 <div className="text-center py-8 text-muted-foreground">
-                                    <p className="mb-2">No active servers yet.</p>
-                                    <p className="text-sm">Be the first to create one! 🚀</p>
+                                    <p className="mb-2">
+                                        No active servers yet.
+                                    </p>
+                                    <p className="text-sm">
+                                        Be the first to create one! 🚀
+                                    </p>
                                 </div>
                             )}
 
                             {activeServers.length > 0 && (
                                 <div className="pt-4 border-t border-border">
                                     <p className="text-sm text-muted-foreground text-center">
-                                        {activeServers.length} active {activeServers.length === 1 ? 'server' : 'servers'}
+                                        {activeServers.length} active{" "}
+                                        {activeServers.length === 1
+                                            ? "server"
+                                            : "servers"}
                                     </p>
                                 </div>
                             )}
@@ -351,9 +421,12 @@ export default function ServerHub() {
                             <div className="inline-flex p-4 rounded-full bg-[hsl(var(--sunset-orange))]/10 mb-4">
                                 <Code2 className="h-8 w-8 text-[hsl(var(--sunset-orange))]" />
                             </div>
-                            <h3 className="font-semibold text-lg mb-2">Collaborative Coding</h3>
+                            <h3 className="font-semibold text-lg mb-2">
+                                Collaborative Coding
+                            </h3>
                             <p className="text-sm text-muted-foreground">
-                                Work on the same code simultaneously. See everyone's changes in real-time.
+                                Work on the same code simultaneously. See
+                                everyone's changes in real-time.
                             </p>
                         </CardContent>
                     </Card>
@@ -363,9 +436,12 @@ export default function ServerHub() {
                             <div className="inline-flex p-4 rounded-full bg-[hsl(var(--sky-blue))]/10 mb-4">
                                 <MessageSquare className="h-8 w-8 text-[hsl(var(--sky-blue))]" />
                             </div>
-                            <h3 className="font-semibold text-lg mb-2">Instant Chat</h3>
+                            <h3 className="font-semibold text-lg mb-2">
+                                Instant Chat
+                            </h3>
                             <p className="text-sm text-muted-foreground">
-                                Discuss solutions, ask questions, and share knowledge instantly.
+                                Discuss solutions, ask questions, and share
+                                knowledge instantly.
                             </p>
                         </CardContent>
                     </Card>
@@ -375,9 +451,12 @@ export default function ServerHub() {
                             <div className="inline-flex p-4 rounded-full bg-[hsl(var(--bead-green))]/10 mb-4">
                                 <Video className="h-8 w-8 text-[hsl(var(--bead-green))]" />
                             </div>
-                            <h3 className="font-semibold text-lg mb-2">Voice & Video</h3>
+                            <h3 className="font-semibold text-lg mb-2">
+                                Voice & Video
+                            </h3>
                             <p className="text-sm text-muted-foreground">
-                                Turn on your camera or mic for pair programming sessions.
+                                Turn on your camera or mic for pair programming
+                                sessions.
                             </p>
                         </CardContent>
                     </Card>

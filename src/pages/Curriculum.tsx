@@ -140,12 +140,18 @@ const Curriculum = () => {
 
     const handleQuizComplete = (passed: boolean, score: number) => {
         if (passed && selectedTopic) {
-            const newCompleted = new Set([...completedTopics, selectedTopic.id]);
+            const newCompleted = new Set([
+                ...completedTopics,
+                selectedTopic.id,
+            ]);
             setCompletedTopics(newCompleted);
             setShowCelebration(true);
 
             // Store in localStorage
-            localStorage.setItem("completedTopics", JSON.stringify(Array.from(newCompleted)));
+            localStorage.setItem(
+                "completedTopics",
+                JSON.stringify(Array.from(newCompleted))
+            );
 
             // After celebration, automatically move to next lesson
             setTimeout(() => {
@@ -154,14 +160,16 @@ const Curriculum = () => {
 
                 // Find next lesson
                 const allTopics: Topic[] = [];
-                selectedLanguage?.categories.forEach(category => {
+                selectedLanguage?.categories.forEach((category) => {
                     allTopics.push(...category.topics);
                 });
 
-                const currentIndex = allTopics.findIndex(t => t.id === selectedTopic.id);
+                const currentIndex = allTopics.findIndex(
+                    (t) => t.id === selectedTopic.id
+                );
                 if (currentIndex < allTopics.length - 1) {
                     // Navigate back to roadmap to show car moved to next lesson
-                    navigate('/curriculum');
+                    navigate("/curriculum");
                 }
             }, 4000); // Show celebration for 4 seconds then auto-progress
         }

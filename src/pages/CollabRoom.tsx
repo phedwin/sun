@@ -43,7 +43,7 @@ import {
     FileCode,
     Settings,
     Maximize2,
-    X
+    X,
 } from "lucide-react";
 import { CodeEditor } from "@/components/CodeEditor";
 import { fetchProblemDetail, LeetCodeProblemDetail } from "@/lib/leetcodeApi";
@@ -61,18 +61,22 @@ export default function CollabRoom() {
         sendMessage,
         updateCode,
         leaveRoom,
-        joinRoom
+        joinRoom,
     } = useSocket();
 
     const [chatMessage, setChatMessage] = useState("");
     const [code, setCode] = useState("");
-    const [language, setLanguage] = useState<"javascript" | "python" | "java" | "cpp">("javascript");
+    const [language, setLanguage] = useState<
+        "javascript" | "python" | "java" | "cpp"
+    >("javascript");
     const [copiedCode, setCopiedCode] = useState(false);
     const [problem, setProblem] = useState<LeetCodeProblemDetail | null>(null);
     const [loadingProblem, setLoadingProblem] = useState(false);
     const [selectedProblem, setSelectedProblem] = useState<string | null>(null);
     const [showFeatures, setShowFeatures] = useState(true);
-    const [activeFeature, setActiveFeature] = useState<'code' | 'chat' | 'video' | null>(null);
+    const [activeFeature, setActiveFeature] = useState<
+        "code" | "chat" | "video" | null
+    >(null);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll chat to bottom
@@ -102,7 +106,8 @@ export default function CollabRoom() {
             const loadProblem = async () => {
                 try {
                     setLoadingProblem(true);
-                    const problemData = await fetchProblemDetail(selectedProblem);
+                    const problemData =
+                        await fetchProblemDetail(selectedProblem);
                     setProblem(problemData);
                 } catch (err) {
                     console.error("Error loading problem:", err);
@@ -138,7 +143,7 @@ export default function CollabRoom() {
         }
     };
 
-    const activateFeature = (feature: 'code' | 'chat' | 'video') => {
+    const activateFeature = (feature: "code" | "chat" | "video") => {
         setActiveFeature(feature);
         setShowFeatures(false);
     };
@@ -151,7 +156,9 @@ export default function CollabRoom() {
                 <main className="container py-12 flex items-center justify-center">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[hsl(var(--sky-blue))] mx-auto mb-4" />
-                        <p className="text-muted-foreground">Joining server...</p>
+                        <p className="text-muted-foreground">
+                            Joining server...
+                        </p>
                     </div>
                 </main>
             </div>
@@ -168,11 +175,18 @@ export default function CollabRoom() {
                     <div className="mb-8 text-center space-y-4">
                         <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[hsl(var(--sky-blue))]/20 to-[hsl(var(--bead-blue))]/20 rounded-full border border-[hsl(var(--sky-blue))]/30">
                             <Users className="h-5 w-5 text-[hsl(var(--sky-blue))]" />
-                            <h1 className="text-xl font-semibold">{currentRoom.name}</h1>
+                            <h1 className="text-xl font-semibold">
+                                {currentRoom.name}
+                            </h1>
                             <Separator orientation="vertical" className="h-5" />
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">Code:</span>
-                                <Badge variant="outline" className="font-mono text-base px-3">
+                                <span className="text-sm text-muted-foreground">
+                                    Code:
+                                </span>
+                                <Badge
+                                    variant="outline"
+                                    className="font-mono text-base px-3"
+                                >
                                     {currentRoom.id}
                                 </Badge>
                                 <Button
@@ -189,7 +203,10 @@ export default function CollabRoom() {
                                 </Button>
                             </div>
                         </div>
-                        <p className="text-muted-foreground">Welcome {currentUser?.username}! Choose a feature to get started.</p>
+                        <p className="text-muted-foreground">
+                            Welcome {currentUser?.username}! Choose a feature to
+                            get started.
+                        </p>
                     </div>
 
                     {/* Feature Cards Grid */}
@@ -197,16 +214,19 @@ export default function CollabRoom() {
                         {/* Collaborative Coding Card */}
                         <Card
                             className="group cursor-pointer border-2 hover:border-[hsl(var(--sunset-orange))] hover:shadow-lg transition-all duration-300 hover:scale-105"
-                            onClick={() => activateFeature('code')}
+                            onClick={() => activateFeature("code")}
                         >
                             <CardContent className="pt-6 text-center space-y-4">
                                 <div className="inline-flex p-6 rounded-full bg-[hsl(var(--sunset-orange))]/10 group-hover:bg-[hsl(var(--sunset-orange))]/20 transition-colors">
                                     <Code2 className="h-12 w-12 text-[hsl(var(--sunset-orange))]" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-xl mb-2">Collaborative Coding</h3>
+                                    <h3 className="font-semibold text-xl mb-2">
+                                        Collaborative Coding
+                                    </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        Work on the same code simultaneously. See everyone's changes in real-time.
+                                        Work on the same code simultaneously.
+                                        See everyone's changes in real-time.
                                     </p>
                                 </div>
                                 <Button className="w-full bg-[hsl(var(--sunset-orange))] hover:bg-[hsl(var(--sunset-orange))]/90">
@@ -219,16 +239,19 @@ export default function CollabRoom() {
                         {/* Instant Chat Card */}
                         <Card
                             className="group cursor-pointer border-2 hover:border-[hsl(var(--sky-blue))] hover:shadow-lg transition-all duration-300 hover:scale-105"
-                            onClick={() => activateFeature('chat')}
+                            onClick={() => activateFeature("chat")}
                         >
                             <CardContent className="pt-6 text-center space-y-4">
                                 <div className="inline-flex p-6 rounded-full bg-[hsl(var(--sky-blue))]/10 group-hover:bg-[hsl(var(--sky-blue))]/20 transition-colors">
                                     <MessageSquare className="h-12 w-12 text-[hsl(var(--sky-blue))]" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-xl mb-2">Instant Chat</h3>
+                                    <h3 className="font-semibold text-xl mb-2">
+                                        Instant Chat
+                                    </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        Discuss solutions, ask questions, and share knowledge instantly.
+                                        Discuss solutions, ask questions, and
+                                        share knowledge instantly.
                                     </p>
                                 </div>
                                 <Button className="w-full bg-[hsl(var(--sky-blue))] hover:bg-[hsl(var(--sky-blue))]/90">
@@ -241,16 +264,19 @@ export default function CollabRoom() {
                         {/* Voice & Video Card */}
                         <Card
                             className="group cursor-pointer border-2 hover:border-[hsl(var(--bead-green))] hover:shadow-lg transition-all duration-300 hover:scale-105"
-                            onClick={() => activateFeature('video')}
+                            onClick={() => activateFeature("video")}
                         >
                             <CardContent className="pt-6 text-center space-y-4">
                                 <div className="inline-flex p-6 rounded-full bg-[hsl(var(--bead-green))]/10 group-hover:bg-[hsl(var(--bead-green))]/20 transition-colors">
                                     <Video className="h-12 w-12 text-[hsl(var(--bead-green))]" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-xl mb-2">Voice & Video</h3>
+                                    <h3 className="font-semibold text-xl mb-2">
+                                        Voice & Video
+                                    </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        Turn on your camera or mic for pair programming sessions.
+                                        Turn on your camera or mic for pair
+                                        programming sessions.
                                     </p>
                                 </div>
                                 <Button className="w-full bg-[hsl(var(--bead-green))] hover:bg-[hsl(var(--bead-green))]/90">
@@ -269,7 +295,11 @@ export default function CollabRoom() {
                                     <Users className="h-4 w-4" />
                                     Active Members ({currentRoom.users.length})
                                 </h3>
-                                <Button variant="outline" size="sm" onClick={handleLeaveRoom}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleLeaveRoom}
+                                >
                                     <LogOut className="h-4 w-4 mr-2" />
                                     Leave Server
                                 </Button>
@@ -305,7 +335,9 @@ export default function CollabRoom() {
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-[hsl(var(--sky-blue))]" />
-                        <span className="font-semibold">{currentRoom.name}</span>
+                        <span className="font-semibold">
+                            {currentRoom.name}
+                        </span>
                     </div>
                     <Separator orientation="vertical" className="h-5" />
                     <div className="flex items-center gap-2">
@@ -328,22 +360,28 @@ export default function CollabRoom() {
                     <div className="flex gap-2">
                         <Button
                             size="sm"
-                            variant={activeFeature === 'code' ? 'default' : 'ghost'}
-                            onClick={() => setActiveFeature('code')}
+                            variant={
+                                activeFeature === "code" ? "default" : "ghost"
+                            }
+                            onClick={() => setActiveFeature("code")}
                         >
                             <Code2 className="h-4 w-4" />
                         </Button>
                         <Button
                             size="sm"
-                            variant={activeFeature === 'chat' ? 'default' : 'ghost'}
-                            onClick={() => setActiveFeature('chat')}
+                            variant={
+                                activeFeature === "chat" ? "default" : "ghost"
+                            }
+                            onClick={() => setActiveFeature("chat")}
                         >
                             <MessageSquare className="h-4 w-4" />
                         </Button>
                         <Button
                             size="sm"
-                            variant={activeFeature === 'video' ? 'default' : 'ghost'}
-                            onClick={() => setActiveFeature('video')}
+                            variant={
+                                activeFeature === "video" ? "default" : "ghost"
+                            }
+                            onClick={() => setActiveFeature("video")}
                         >
                             <Video className="h-4 w-4" />
                         </Button>
@@ -357,7 +395,11 @@ export default function CollabRoom() {
                     >
                         <Maximize2 className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="outline" onClick={handleLeaveRoom}>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleLeaveRoom}
+                    >
                         <LogOut className="h-4 w-4 mr-2" />
                         Leave
                     </Button>
@@ -385,9 +427,16 @@ export default function CollabRoom() {
                                         className="w-2 h-2 rounded-full"
                                         style={{ backgroundColor: user.color }}
                                     />
-                                    <span className="text-sm">{user.username}</span>
+                                    <span className="text-sm">
+                                        {user.username}
+                                    </span>
                                     {user.id === currentUser?.id && (
-                                        <Badge variant="secondary" className="text-xs ml-auto">You</Badge>
+                                        <Badge
+                                            variant="secondary"
+                                            className="text-xs ml-auto"
+                                        >
+                                            You
+                                        </Badge>
                                     )}
                                 </div>
                             ))}
@@ -397,7 +446,7 @@ export default function CollabRoom() {
 
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col">
-                    {activeFeature === 'code' && (
+                    {activeFeature === "code" && (
                         <div className="flex-1 flex gap-4 p-4">
                             {/* Problem Panel (if problem selected) */}
                             {problem && (
@@ -405,13 +454,17 @@ export default function CollabRoom() {
                                     <ScrollArea className="h-full">
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
-                                                <h2 className="text-xl font-semibold">{problem.title}</h2>
+                                                <h2 className="text-xl font-semibold">
+                                                    {problem.title}
+                                                </h2>
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
                                                     onClick={() => {
                                                         setProblem(null);
-                                                        setSelectedProblem(null);
+                                                        setSelectedProblem(
+                                                            null
+                                                        );
                                                     }}
                                                 >
                                                     <X className="h-4 w-4" />
@@ -420,25 +473,33 @@ export default function CollabRoom() {
                                             <div className="flex gap-2">
                                                 <Badge
                                                     variant={
-                                                        problem.difficulty === "Easy"
+                                                        problem.difficulty ===
+                                                        "Easy"
                                                             ? "default"
-                                                            : problem.difficulty === "Medium"
-                                                            ? "secondary"
-                                                            : "destructive"
+                                                            : problem.difficulty ===
+                                                                "Medium"
+                                                              ? "secondary"
+                                                              : "destructive"
                                                     }
                                                 >
                                                     {problem.difficulty}
                                                 </Badge>
-                                                {problem.topicTags?.slice(0, 2).map((tag) => (
-                                                    <Badge key={tag.name} variant="outline">
-                                                        {tag.name}
-                                                    </Badge>
-                                                ))}
+                                                {problem.topicTags
+                                                    ?.slice(0, 2)
+                                                    .map((tag) => (
+                                                        <Badge
+                                                            key={tag.name}
+                                                            variant="outline"
+                                                        >
+                                                            {tag.name}
+                                                        </Badge>
+                                                    ))}
                                             </div>
                                             <div
                                                 className="prose prose-sm dark:prose-invert max-w-none"
                                                 dangerouslySetInnerHTML={{
-                                                    __html: problem.content || "",
+                                                    __html:
+                                                        problem.content || "",
                                                 }}
                                             />
                                         </div>
@@ -453,14 +514,20 @@ export default function CollabRoom() {
                                         <div className="flex items-center gap-4">
                                             <FileCode className="h-5 w-5 text-muted-foreground" />
                                             <div className="flex-1">
-                                                <p className="text-sm font-medium mb-1">Load a problem to solve together</p>
+                                                <p className="text-sm font-medium mb-1">
+                                                    Load a problem to solve
+                                                    together
+                                                </p>
                                                 <Input
                                                     placeholder="Enter problem slug (e.g., two-sum)"
                                                     className="max-w-md"
                                                     onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            const input = e.currentTarget as HTMLInputElement;
-                                                            setSelectedProblem(input.value);
+                                                        if (e.key === "Enter") {
+                                                            const input =
+                                                                e.currentTarget as HTMLInputElement;
+                                                            setSelectedProblem(
+                                                                input.value
+                                                            );
                                                         }
                                                     }}
                                                 />
@@ -480,15 +547,20 @@ export default function CollabRoom() {
                         </div>
                     )}
 
-                    {activeFeature === 'chat' && (
+                    {activeFeature === "chat" && (
                         <div className="flex-1 flex flex-col p-4">
                             <ScrollArea className="flex-1 pr-4 mb-4">
                                 <div className="space-y-4">
                                     {messages.map((msg) => (
-                                        <div key={msg.id} className="flex gap-3">
+                                        <div
+                                            key={msg.id}
+                                            className="flex gap-3"
+                                        >
                                             <div
                                                 className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold"
-                                                style={{ backgroundColor: msg.color }}
+                                                style={{
+                                                    backgroundColor: msg.color,
+                                                }}
                                             >
                                                 {msg.username[0].toUpperCase()}
                                             </div>
@@ -498,10 +570,14 @@ export default function CollabRoom() {
                                                         {msg.username}
                                                     </span>
                                                     <span className="text-xs text-muted-foreground">
-                                                        {new Date(msg.timestamp).toLocaleTimeString()}
+                                                        {new Date(
+                                                            msg.timestamp
+                                                        ).toLocaleTimeString()}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm">{msg.message}</p>
+                                                <p className="text-sm">
+                                                    {msg.message}
+                                                </p>
                                             </div>
                                         </div>
                                     ))}
@@ -512,8 +588,12 @@ export default function CollabRoom() {
                                 <Input
                                     placeholder="Type a message..."
                                     value={chatMessage}
-                                    onChange={(e) => setChatMessage(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                                    onChange={(e) =>
+                                        setChatMessage(e.target.value)
+                                    }
+                                    onKeyDown={(e) =>
+                                        e.key === "Enter" && handleSendMessage()
+                                    }
                                 />
                                 <Button onClick={handleSendMessage}>
                                     <Send className="h-4 w-4" />
@@ -522,16 +602,19 @@ export default function CollabRoom() {
                         </div>
                     )}
 
-                    {activeFeature === 'video' && (
+                    {activeFeature === "video" && (
                         <div className="flex-1 flex items-center justify-center p-4">
                             <Card className="max-w-md w-full">
                                 <CardContent className="pt-6 text-center space-y-4">
                                     <div className="inline-flex p-6 rounded-full bg-[hsl(var(--bead-green))]/10">
                                         <Video className="h-12 w-12 text-[hsl(var(--bead-green))]" />
                                     </div>
-                                    <h3 className="font-semibold text-xl">Voice & Video Coming Soon</h3>
+                                    <h3 className="font-semibold text-xl">
+                                        Voice & Video Coming Soon
+                                    </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        We're working on adding voice and video call features. Stay tuned!
+                                        We're working on adding voice and video
+                                        call features. Stay tuned!
                                     </p>
                                     <div className="flex gap-2 justify-center">
                                         <Button variant="outline" disabled>
